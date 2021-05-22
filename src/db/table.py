@@ -1,5 +1,5 @@
-from data_types import Type, InvalidTypeError
-from exceptions import RecordIndexError
+from db.data_types import Type
+from db.exceptions import RecordIndexError
 
 
 class Table:

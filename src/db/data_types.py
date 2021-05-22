@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from exceptions import InvalidTypeError
+from db.exceptions import InvalidTypeError
 
 
 class Type(ABC):

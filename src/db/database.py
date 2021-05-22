@@ -1,7 +1,7 @@
 import pickle
 
-from exceptions import NoSuchTableError
-from table import Table
+from db.exceptions import NoSuchTableError
+from db.table import Table
 
 
 class Database:
