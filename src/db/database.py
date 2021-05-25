@@ -18,6 +18,9 @@ class Database:
         except KeyError:
             raise NoSuchTableError(table_name)
 
+    def get_table_names(self):
+        return list(self.tables.keys())
+
     def drop_table(self, table_name: str):
         try:
             self.tables.pop(table_name)
