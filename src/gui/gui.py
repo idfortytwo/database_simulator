@@ -5,8 +5,60 @@ from db.database import Database
 
 
 class AddTableWindow(QtWidgets.QWidget):
-    def __init__(self):
+    def __init__(self, main_window):
         super().__init__()
+        self.main_window = main_window
+        self.setupUi()
+
+    def setupUi(self):
+        self.resize(421, 385)
+
+        self.buttonBox = QtWidgets.QDialogButtonBox(self)
+        self.buttonBox.setGeometry(QtCore.QRect(230, 330, 161, 51))
+        self.buttonBox.setMinimumSize(QtCore.QSize(0, 0))
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+
+        self.label_table_name = QtWidgets.QLabel(self)
+        self.label_table_name.setGeometry(QtCore.QRect(20, 20, 61, 16))
+        self.label_table_name.setText('Table name')
+
+        self.line_edit_table_name = QtWidgets.QLineEdit(self)
+        self.line_edit_table_name.setGeometry(QtCore.QRect(20, 40, 191, 20))
+
+        self.label_columns = QtWidgets.QLabel(self)
+        self.label_columns.setGeometry(QtCore.QRect(20, 80, 61, 16))
+        self.label_columns.setText('Columns')
+
+        self.add_column_button = QtWidgets.QPushButton(self)
+        self.add_column_button.setGeometry(QtCore.QRect(70, 80, 16, 16))
+        self.add_column_button.setText('+')
+
+        self.remove_column_button = QtWidgets.QPushButton(self)
+        self.remove_column_button.setGeometry(QtCore.QRect(90, 80, 16, 16))
+        self.remove_column_button.setText('-')
+
+        self.columns_table = QtWidgets.QTableWidget(self)
+        self.columns_table.setGeometry(QtCore.QRect(20, 100, 381, 221))
+        self.columns_table.setColumnCount(2)
+
+        self.columns_table.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem('Column name'))
+        self.columns_table.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem('Data type'))
+
+        self.columns_table.horizontalHeader().setVisible(True)
+        self.columns_table.horizontalHeader().setDefaultSectionSize(220)
+        self.columns_table.horizontalHeader().setHighlightSections(True)
+        self.columns_table.horizontalHeader().setSortIndicatorShown(False)
+        self.columns_table.horizontalHeader().setStretchLastSection(True)
+        self.columns_table.verticalHeader().setDefaultSectionSize(50)
+        self.columns_table.verticalHeader().setStretchLastSection(True)
+        self.columns_table.setColumnWidth(1, 96)
+
+        self.setWindowTitle('Add table')
+        QtCore.QMetaObject.connectSlotsByName(self)
+
+    def closeEvent(self, a0):
+        self.main_window.add_table_window = None
+        super().close()
 
 
 class ConfirmRemoval(QtWidgets.QWidget):
@@ -18,6 +70,8 @@ class DatabaseWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.db = Database()
+
+        self.add_table_window = None
         self.setupUi()
 
     def setupUi(self):
@@ -28,6 +82,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.add_table_button = QtWidgets.QPushButton(self.centralwidget)
         self.add_table_button.setGeometry(QtCore.QRect(30, 360, 71, 23))
         self.add_table_button.setText('Add table')
+        self.add_table_button.clicked.connect(self.add_table)
 
         self.remove_table_button = QtWidgets.QPushButton(self.centralwidget)
         self.remove_table_button.setGeometry(QtCore.QRect(30, 390, 91, 23))
@@ -86,6 +141,12 @@ class DatabaseWindow(QtWidgets.QMainWindow):
 
         self.db.save(filename)
 
+    def add_table(self):
+        if not self.add_table_window:
+            self.add_table_window = AddTableWindow(self)
+            self.add_table_window.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
+            self.add_table_window.show()
+
     def fill_tables_table(self):
         table_names = self.db.get_table_names()
         self.table_names_table.setRowCount(len(table_names))
@@ -111,6 +172,10 @@ class DatabaseWindow(QtWidgets.QMainWindow):
                 item = QtWidgets.QTableWidgetItem(str(value))
                 self.table_data_table.setItem(i, j, item)
 
+    def closeEvent(self, a0):
+        if self.add_table_window:
+            self.add_table_window.close()
+        super().close()
 
 
 def run_GUI():
