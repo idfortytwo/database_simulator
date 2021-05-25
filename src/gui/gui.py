@@ -7,6 +7,21 @@ from PyQt5.QtWidgets import QAbstractItemView, QMainWindow, QWidget, QPushButton
 from db.database import Database
 
 
+class SelectDatabaseWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+
+
+class AddTableWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+
+
+class ConfirmRemoval(QWidget):
+    def __init__(self):
+        super().__init__()
+
+
 class DatabaseWindow:
     def __init__(self, db: Database):
         self.app = QtWidgets.QApplication(sys.argv)
