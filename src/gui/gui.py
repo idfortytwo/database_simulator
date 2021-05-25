@@ -14,16 +14,16 @@ class ConfirmRemoval(QtWidgets.QWidget):
         super().__init__()
 
 
-class DatabaseWindow:
+class DatabaseWindow(QtWidgets.QMainWindow):
     def __init__(self):
-        self.app = QtWidgets.QApplication(sys.argv)
-        self.main_window = QtWidgets.QMainWindow()
+        super().__init__()
         self.db = Database()
+        self.setupUi()
 
     def setupUi(self):
-        self.main_window.resize(1139, 775)
+        self.resize(1139, 775)
         # MainWindow.resize(800, 500)
-        self.centralwidget = QtWidgets.QWidget(self.main_window)
+        self.centralwidget = QtWidgets.QWidget(self)
 
         self.add_table_button = QtWidgets.QPushButton(self.centralwidget)
         self.add_table_button.setGeometry(QtCore.QRect(30, 360, 71, 23))
@@ -60,16 +60,16 @@ class DatabaseWindow:
         self.save_db_button.setText('Save database')
         self.save_db_button.clicked.connect(self.save_db)
 
-        self.main_window.setCentralWidget(self.centralwidget)
-        self.statusbar = QtWidgets.QStatusBar(self.main_window)
-        self.main_window.setStatusBar(self.statusbar)
+        self.setCentralWidget(self.centralwidget)
+        self.statusbar = QtWidgets.QStatusBar(self)
+        self.setStatusBar(self.statusbar)
 
-        self.main_window.setWindowTitle('Database Simulator')
-        QtCore.QMetaObject.connectSlotsByName(self.main_window)
+        self.setWindowTitle('Database Simulator')
+        QtCore.QMetaObject.connectSlotsByName(self)
 
     def load_db(self):
         filename = QtWidgets.QFileDialog.getOpenFileName(
-            self.main_window, 'Load database', '', 'Database Files (*.db)')[0]
+            self, 'Load database', '', 'Database Files (*.db)')[0]
 
         if not filename:
             return
@@ -79,7 +79,7 @@ class DatabaseWindow:
 
     def save_db(self):
         filename = QtWidgets.QFileDialog.getSaveFileName(
-            self.main_window, 'Save database', '', 'Database Files (*.db)')[0]
+            self, 'Save database', '', 'Database Files (*.db)')[0]
 
         if not filename:
             return
@@ -111,20 +111,17 @@ class DatabaseWindow:
                 item = QtWidgets.QTableWidgetItem(str(value))
                 self.table_data_table.setItem(i, j, item)
 
-    def show(self):
-        self.setupUi()
-        self.fill_tables_table()
 
-        self.main_window.show()
-        self.app.exec()
+
+def run_GUI():
+    app = QtWidgets.QApplication(sys.argv)
+    w = DatabaseWindow()
+    w.show()
+    app.exec()
 
 
 def main():
-    ui = DatabaseWindow()
-    ui.show()
-
-    # database_selection_window = SelectDatabaseWindow()
-    # database_selection_window.show()
+    run_GUI()
 
 
 if __name__ == '__main__':
