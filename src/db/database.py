@@ -5,8 +5,8 @@ from db.table import Table
 
 
 class Database:
-    def __init__(self, filename: str):
-        self.filename = filename
+    def __init__(self):
+        self.filename = None
         self.tables = {}
 
     def add_table(self, table: Table, table_name: str):
@@ -32,14 +32,15 @@ class Database:
             'tables': {**self.tables}
         }
 
-    def save(self):
-        with open(self.filename, 'wb') as f:
+    def save(self, filename=None):
+        with open(filename or self.filename, 'wb') as f:
             pickle.dump(self.to_dict(), f)
 
-    def load(self):
-        with open(self.filename, 'rb') as f:
+    def load(self, filename):
+        with open(filename, 'rb') as f:
             unpickled = pickle.load(f)
             self.tables = unpickled['tables']
+            self.filename = filename
 
     def show(self):
         for table_name, table_data in self.tables.items():
