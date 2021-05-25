@@ -2,14 +2,9 @@ import sys
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QAbstractItemView, QMainWindow, QWidget, QPushButton, QLineEdit, QTableWidget, QStatusBar, \
-    QTableWidgetItem
+    QTableWidgetItem, QVBoxLayout, QLabel, QApplication
 
 from db.database import Database
-
-
-class SelectDatabaseWindow(QWidget):
-    def __init__(self):
-        super().__init__()
 
 
 class AddTableWindow(QWidget):
@@ -23,14 +18,10 @@ class ConfirmRemoval(QWidget):
 
 
 class DatabaseWindow:
-    def __init__(self, db: Database):
-        self.app = QtWidgets.QApplication(sys.argv)
+    def __init__(self):
+        self.app = QApplication(sys.argv)
         self.main_window = QMainWindow()
-
-        self.db = db
-
-        self.setupUi()
-        self.fill_tables_table()
+        self.db = Database()
 
     def setupUi(self):
         self.main_window.setObjectName("MainWindow")
@@ -68,6 +59,18 @@ class DatabaseWindow:
         self.table_data_table.setColumnCount(0)
         self.table_data_table.setRowCount(0)
 
+        self.load_db_button = QtWidgets.QPushButton(self.centralwidget)
+        self.load_db_button.setGeometry(QtCore.QRect(30, 670, 91, 31))
+        self.load_db_button.setObjectName("pushButton_4")
+        self.load_db_button.setText('Load database')
+        self.load_db_button.clicked.connect(self.load_db)
+
+        self.save_db_button = QtWidgets.QPushButton(self.centralwidget)
+        self.save_db_button.setGeometry(QtCore.QRect(30, 710, 91, 31))
+        self.save_db_button.setObjectName("pushButton_5")
+        self.save_db_button.setText('Save database')
+        self.save_db_button.clicked.connect(self.save_db)
+
         self.main_window.setCentralWidget(self.centralwidget)
         self.statusbar = QStatusBar(self.main_window)
         self.statusbar.setObjectName("statusbar")
@@ -75,6 +78,26 @@ class DatabaseWindow:
 
         self.main_window.setWindowTitle('Database Simulator')
         QtCore.QMetaObject.connectSlotsByName(self.main_window)
+
+    def load_db(self):
+        filename = QtWidgets.QFileDialog.getOpenFileName(
+            self.main_window, 'Load database', '', 'Database Files (*.db)')[0]
+
+        if not filename:
+            return
+
+        print(filename)
+        self.db.load(filename)
+        self.fill_tables_table()
+
+    def save_db(self):
+        filename = QtWidgets.QFileDialog.getSaveFileName(
+            self.main_window, 'Save database', '', 'Database Files (*.db)')[0]
+
+        if not filename:
+            return
+
+        self.db.save(filename)
 
     def fill_tables_table(self):
         table_names = self.db.get_table_names()
@@ -102,17 +125,19 @@ class DatabaseWindow:
                 self.table_data_table.setItem(i, j, item)
 
     def show(self):
+        self.setupUi()
+        self.fill_tables_table()
+
         self.main_window.show()
         self.app.exec()
 
 
 def main():
-    db = Database('../../kek.db')
-    db.load()
-    db.show()
-
-    ui = DatabaseWindow(db)
+    ui = DatabaseWindow()
     ui.show()
+
+    # database_selection_window = SelectDatabaseWindow()
+    # database_selection_window.show()
 
 
 if __name__ == '__main__':
