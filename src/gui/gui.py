@@ -21,11 +21,9 @@ class DatabaseWindow:
         self.db = Database()
 
     def setupUi(self):
-        self.main_window.setObjectName("MainWindow")
         self.main_window.resize(1139, 775)
         # MainWindow.resize(800, 500)
         self.centralwidget = QtWidgets.QWidget(self.main_window)
-        self.centralwidget.setObjectName("centralwidget")
 
         self.add_table_button = QtWidgets.QPushButton(self.centralwidget)
         self.add_table_button.setGeometry(QtCore.QRect(30, 360, 71, 23))
@@ -37,40 +35,33 @@ class DatabaseWindow:
 
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit.setGeometry(QtCore.QRect(220, 30, 801, 41))
-        self.lineEdit.setObjectName("lineEdit")
         self.search_button = QtWidgets.QPushButton(self.centralwidget)
         self.search_button.setGeometry(QtCore.QRect(1030, 30, 71, 41))
-        self.search_button.setObjectName("pushButton_3")
         self.search_button.setText("Search")
 
         self.table_names_table = QtWidgets.QTableWidget(self.centralwidget)
         self.table_names_table.setGeometry(QtCore.QRect(30, 30, 171, 321))
-        self.table_names_table.setObjectName("tableWidget")
         self.table_names_table.setColumnCount(1)
         self.table_names_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.table_names_table.cellDoubleClicked.connect(self.refill_table_data)
 
         self.table_data_table = QtWidgets.QTableWidget(self.centralwidget)
         self.table_data_table.setGeometry(QtCore.QRect(220, 80, 881, 661))
-        self.table_data_table.setObjectName("tableWidget_2")
         self.table_data_table.setColumnCount(0)
         self.table_data_table.setRowCount(0)
 
         self.load_db_button = QtWidgets.QPushButton(self.centralwidget)
         self.load_db_button.setGeometry(QtCore.QRect(30, 670, 91, 31))
-        self.load_db_button.setObjectName("pushButton_4")
         self.load_db_button.setText('Load database')
         self.load_db_button.clicked.connect(self.load_db)
 
         self.save_db_button = QtWidgets.QPushButton(self.centralwidget)
         self.save_db_button.setGeometry(QtCore.QRect(30, 710, 91, 31))
-        self.save_db_button.setObjectName("pushButton_5")
         self.save_db_button.setText('Save database')
         self.save_db_button.clicked.connect(self.save_db)
 
         self.main_window.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(self.main_window)
-        self.statusbar.setObjectName("statusbar")
         self.main_window.setStatusBar(self.statusbar)
 
         self.main_window.setWindowTitle('Database Simulator')
