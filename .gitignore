@@ -131,3 +131,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+/database_simulator.py
+/database_simulator.ui
