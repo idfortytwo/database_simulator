@@ -86,7 +86,6 @@ class DatabaseWindow:
         if not filename:
             return
 
-        print(filename)
         self.db.load(filename)
         self.fill_tables_table()
 
