@@ -104,3 +104,16 @@ class DatabaseWindow:
     def show(self):
         self.main_window.show()
         self.app.exec()
+
+
+def main():
+    db = Database('../../kek.db')
+    db.load()
+    db.show()
+
+    ui = DatabaseWindow(db)
+    ui.show()
+
+
+if __name__ == '__main__':
+    main()
