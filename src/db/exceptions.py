@@ -19,3 +19,9 @@ class RecordIndexError(Error):
 class InvalidTypeError(Error):
     def __init__(self, value, data_type):
         self.message = f'{value} is not {data_type}'
+
+
+class DuplicateColumnNameError(Error):
+    def __init__(self, row_index):
+        self.row_index = row_index
+        self.message = f'duplicate column name at row {row_index}'

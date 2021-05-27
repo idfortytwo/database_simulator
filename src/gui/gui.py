@@ -1,15 +1,34 @@
 import sys
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
+
+from db.data_types import Integer, Float, Text
 from db.database import Database
+from db.exceptions import DuplicateColumnNameError
+from db.table import Table
+
+
+class TypeComboBox(QtWidgets.QComboBox):
+    def __init__(self, data_types):
+        super().__init__()
+
+        self.data_types_dict = {str(data_type): data_type for data_type in data_types}
+        for data_type in data_types:
+            self.addItem(str(data_type))
+
+    # def currentText(self):
+    #     return self.data_types_dict[self.currentText()]
 
 
 class AddTableWindow(QtWidgets.QWidget):
+    db: Database
+
     def __init__(self, main_window):
         super().__init__()
         self.main_window = main_window
         self.setup_UI()
         self.add_column()
+        self.db = self.main_window.db
 
     def setup_UI(self):
         self.resize(421, 385)
@@ -58,6 +77,8 @@ class AddTableWindow(QtWidgets.QWidget):
         self.columns_table.verticalHeader().setVisible(True)
         self.columns_table.setColumnWidth(1, 96)
 
+        self.columns_table.clicked.connect(self.clear_color)
+
         self.setWindowTitle('Add table')
         QtCore.QMetaObject.connectSlotsByName(self)
 
@@ -66,9 +87,7 @@ class AddTableWindow(QtWidgets.QWidget):
         self.columns_table.setRowCount(row + 1)
 
         column_name = QtWidgets.QTableWidgetItem()
-        column_types = QtWidgets.QComboBox()
-        for t in ['Integer', 'Float', 'Text']:
-            column_types.addItem(t)
+        column_types = TypeComboBox([Integer, Float, Text])
 
         self.columns_table.setItem(row, 0, column_name)
         self.columns_table.setCellWidget(row, 1, column_types)
@@ -82,15 +101,51 @@ class AddTableWindow(QtWidgets.QWidget):
         else:
             self.columns_table.removeRow(self.columns_table.rowCount()-1)
 
+    def get_table_data(self):
+        table_name = self.line_edit_table_name.text()
+        data = {}
+
+        for row_index in range(self.columns_table.rowCount()):
+            column_name = self.columns_table.item(row_index, 0).text()
+            column_type = self.columns_table.cellWidget(row_index, 1).currentText()
+
+            if column_name not in data.keys():
+                data[column_name] = column_type
+            else:
+                raise DuplicateColumnNameError(row_index)
+
+        return table_name, data
+
+    def clear_color(self, cell_index: QtCore.QModelIndex):
+        cell = self.columns_table.item(cell_index.row(), cell_index.column())
+        cell.setBackground(QtGui.QColor(0, 0, 0, 0))
+        cell.setToolTip('')
+
     def confirm(self):
-        print('confirm')
+        try:
+            table_name, data = self.get_table_data()
+
+        except DuplicateColumnNameError as duplicate_error:
+            row_index = duplicate_error.row_index
+            duplicate_cell = self.columns_table.item(row_index, 0)
+            duplicate_cell.setBackground(QtGui.QColor(255, 0, 0, 127))
+            duplicate_cell.setToolTip('Column names should be unique')
+            self.columns_table.clearSelection()
+
+        else:
+            table = Table(data)
+            self.db.add_table(table, table_name)
+
+            self.main_window.fill_tables_table()
+
+            self.close()
 
     def cancel(self):
         self.close()
 
     def closeEvent(self, a0):
         self.main_window.add_table_window = None
-        super().close()
+        self.close()
 
 
 class ConfirmRemoval(QtWidgets.QWidget):
@@ -222,4 +277,8 @@ def main():
 
 
 if __name__ == '__main__':
+    def except_hook(cls, exception, traceback):
+        sys.__excepthook__(cls, exception, traceback)
+
+    sys.excepthook = except_hook
     main()

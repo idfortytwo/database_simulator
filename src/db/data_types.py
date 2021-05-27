@@ -14,7 +14,7 @@ class Type(ABC):
         pass
 
 
-class Integer(Type):
+class _Integer(Type):
     @staticmethod
     def validate(value):
         if not isinstance(value, int):
@@ -24,7 +24,7 @@ class Integer(Type):
         return 'Integer'
 
 
-class Float(Type):
+class _Float(Type):
     @staticmethod
     def validate(value):
         if not isinstance(value, float) and not isinstance(value, int):
@@ -34,7 +34,7 @@ class Float(Type):
         return 'Float'
 
 
-class Text(Type):
+class _Text(Type):
     @staticmethod
     def validate(value):
         if not isinstance(value, str):
@@ -43,5 +43,9 @@ class Text(Type):
     def __str__(self):
         return 'Text'
 
+
+Integer = _Integer()
+Float = _Float()
+Text = _Text()
 
 # __all__ = ['Type', 'Integer', 'Float', 'Text', 'InvalidTypeError']
