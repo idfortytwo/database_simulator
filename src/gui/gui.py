@@ -9,6 +9,7 @@ class AddTableWindow(QtWidgets.QWidget):
         super().__init__()
         self.main_window = main_window
         self.setup_UI()
+        self.add_column()
 
     def setup_UI(self):
         self.resize(421, 385)
@@ -53,15 +54,24 @@ class AddTableWindow(QtWidgets.QWidget):
         self.columns_table.horizontalHeader().setHighlightSections(True)
         self.columns_table.horizontalHeader().setSortIndicatorShown(False)
         self.columns_table.horizontalHeader().setStretchLastSection(True)
-        self.columns_table.verticalHeader().setDefaultSectionSize(50)
-        self.columns_table.verticalHeader().setStretchLastSection(True)
+        self.columns_table.verticalHeader().setDefaultSectionSize(40)
+        self.columns_table.verticalHeader().setVisible(True)
         self.columns_table.setColumnWidth(1, 96)
 
         self.setWindowTitle('Add table')
         QtCore.QMetaObject.connectSlotsByName(self)
 
     def add_column(self):
-        print('add column')
+        row = self.columns_table.rowCount()
+        self.columns_table.setRowCount(row + 1)
+
+        column_name = QtWidgets.QTableWidgetItem()
+        column_types = QtWidgets.QComboBox()
+        for t in ['Integer', 'Float', 'Text']:
+            column_types.addItem(t)
+
+        self.columns_table.setItem(row, 0, column_name)
+        self.columns_table.setCellWidget(row, 1, column_types)
 
     def remove_column(self):
         print('remove column')
