@@ -13,10 +13,12 @@ class AddTableWindow(QtWidgets.QWidget):
     def setup_UI(self):
         self.resize(421, 385)
 
-        self.buttonBox = QtWidgets.QDialogButtonBox(self)
-        self.buttonBox.setGeometry(QtCore.QRect(230, 330, 161, 51))
-        self.buttonBox.setMinimumSize(QtCore.QSize(0, 0))
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+        self.button_box = QtWidgets.QDialogButtonBox(self)
+        self.button_box.setGeometry(QtCore.QRect(230, 330, 161, 51))
+        self.button_box.setMinimumSize(QtCore.QSize(0, 0))
+        self.button_box.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+        self.button_box.accepted.connect(self.confirm)
+        self.button_box.rejected.connect(self.cancel)
 
         self.label_table_name = QtWidgets.QLabel(self)
         self.label_table_name.setGeometry(QtCore.QRect(20, 20, 61, 16))
@@ -32,10 +34,12 @@ class AddTableWindow(QtWidgets.QWidget):
         self.add_column_button = QtWidgets.QPushButton(self)
         self.add_column_button.setGeometry(QtCore.QRect(70, 80, 16, 16))
         self.add_column_button.setText('+')
+        self.add_column_button.clicked.connect(self.add_column)
 
         self.remove_column_button = QtWidgets.QPushButton(self)
         self.remove_column_button.setGeometry(QtCore.QRect(90, 80, 16, 16))
         self.remove_column_button.setText('-')
+        self.remove_column_button.clicked.connect(self.remove_column)
 
         self.columns_table = QtWidgets.QTableWidget(self)
         self.columns_table.setGeometry(QtCore.QRect(20, 100, 381, 221))
@@ -55,6 +59,18 @@ class AddTableWindow(QtWidgets.QWidget):
 
         self.setWindowTitle('Add table')
         QtCore.QMetaObject.connectSlotsByName(self)
+
+    def add_column(self):
+        print('add column')
+
+    def remove_column(self):
+        print('remove column')
+
+    def confirm(self):
+        print('confirm')
+
+    def cancel(self):
+        print('cancel')
 
     def closeEvent(self, a0):
         self.main_window.add_table_window = None
