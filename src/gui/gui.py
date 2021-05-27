@@ -82,6 +82,7 @@ class AddTableWindow(QtWidgets.QWidget):
         self.setWindowTitle('Add table')
         QtCore.QMetaObject.connectSlotsByName(self)
 
+    # TODO: check if table name is empty
     def add_column(self):
         row = self.columns_table.rowCount()
         self.columns_table.setRowCount(row + 1)
@@ -92,6 +93,7 @@ class AddTableWindow(QtWidgets.QWidget):
         self.columns_table.setItem(row, 0, column_name)
         self.columns_table.setCellWidget(row, 1, column_types)
 
+    # TODO: ask for confirmation
     def remove_column(self):
         selected_rows = [index.row() for index in self.columns_table.selectedIndexes()]
 
@@ -171,6 +173,8 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.add_table_button.setText('Add table')
         self.add_table_button.clicked.connect(self.add_table)
 
+        # TODO: remove table function
+        # TODO: ask for confirmation
         self.remove_table_button = QtWidgets.QPushButton(self.centralwidget)
         self.remove_table_button.setGeometry(QtCore.QRect(30, 390, 91, 23))
         self.remove_table_button.setText('Remove table')
@@ -242,6 +246,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
             item = QtWidgets.QTableWidgetItem(row)
             self.table_names_table.setItem(i, 0, item)
 
+    # TODO: show column data types as tooltips
     def refill_table_data(self, row):
         table_name = self.table_names_table.item(row, 0).text()
         table = self.db.get_table(table_name)
