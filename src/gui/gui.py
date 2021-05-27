@@ -186,6 +186,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.table_names_table.setColumnCount(1)
         self.table_names_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.table_names_table.cellDoubleClicked.connect(self.refill_table_data)
+        self.table_names_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
 
         self.table_data_table = QtWidgets.QTableWidget(self.centralwidget)
         self.table_data_table.setGeometry(QtCore.QRect(220, 80, 881, 661))
