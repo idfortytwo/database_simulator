@@ -1,6 +1,7 @@
 .idea/*
 main.py
 *.db
+*.ui
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
