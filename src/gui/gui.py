@@ -8,9 +8,9 @@ class AddTableWindow(QtWidgets.QWidget):
     def __init__(self, main_window):
         super().__init__()
         self.main_window = main_window
-        self.setupUi()
+        self.setup_UI()
 
-    def setupUi(self):
+    def setup_UI(self):
         self.resize(421, 385)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(self)
@@ -72,9 +72,9 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.db = Database()
 
         self.add_table_window = None
-        self.setupUi()
+        self.setup_UI()
 
-    def setupUi(self):
+    def setup_UI(self):
         self.resize(1139, 775)
         # MainWindow.resize(800, 500)
         self.centralwidget = QtWidgets.QWidget(self)
