@@ -80,7 +80,7 @@ class AddTableWindow(QtWidgets.QWidget):
         print('confirm')
 
     def cancel(self):
-        print('cancel')
+        self.close()
 
     def closeEvent(self, a0):
         self.main_window.add_table_window = None
