@@ -73,7 +73,7 @@ class AddTableWindow(QtWidgets.QWidget):
         self.columns_table.horizontalHeader().setHighlightSections(True)
         self.columns_table.horizontalHeader().setSortIndicatorShown(False)
         self.columns_table.horizontalHeader().setStretchLastSection(True)
-        self.columns_table.verticalHeader().setDefaultSectionSize(40)
+        self.columns_table.verticalHeader().setDefaultSectionSize(30)
         self.columns_table.verticalHeader().setVisible(True)
         self.columns_table.setColumnWidth(1, 96)
 
