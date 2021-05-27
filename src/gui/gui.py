@@ -74,7 +74,13 @@ class AddTableWindow(QtWidgets.QWidget):
         self.columns_table.setCellWidget(row, 1, column_types)
 
     def remove_column(self):
-        print('remove column')
+        selected_rows = [index.row() for index in self.columns_table.selectedIndexes()]
+
+        if selected_rows:
+            for selected_row in selected_rows:
+                self.columns_table.removeRow(selected_row)
+        else:
+            self.columns_table.removeRow(self.columns_table.rowCount()-1)
 
     def confirm(self):
         print('confirm')
