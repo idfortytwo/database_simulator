@@ -37,3 +37,13 @@ class IllegalColumnNameError(Error):
     def __init__(self, row_index):
         self.row_index = row_index
         self.message = f'illegal characters in column name at row {row_index}'
+
+
+class EmptyTableNameError(Error):
+    def __init__(self):
+        self.message = f'empty table name'
+
+
+class IllegalTableNameError(Error):
+    def __init__(self):
+        self.message = f'illegal characters in table name'

@@ -1,9 +1,11 @@
 import re
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import pyqtSignal
 
 from db import data_types
-from db.exceptions import DuplicateColumnNameError, EmptyColumnNameError, IllegalColumnNameError
+from db.exceptions import DuplicateColumnNameError, EmptyColumnNameError, IllegalColumnNameError, EmptyTableNameError, \
+    IllegalTableNameError
 from db.table import Table
 
 
@@ -17,6 +19,14 @@ class TypeComboBox(QtWidgets.QComboBox):
         self.data_types_dict = {str(data_type): data_type for data_type in data_types}
         for data_type in data_types:
             self.addItem(str(data_type))
+
+
+class ClickableLineEdit(QtWidgets.QLineEdit):
+    clicked = pyqtSignal()
+
+    def mousePressEvent(self, event):
+        # noinspection PyUnresolvedReferences
+        self.clicked.emit()
 
 
 class AddTableWindow(QtWidgets.QWidget):
@@ -41,8 +51,11 @@ class AddTableWindow(QtWidgets.QWidget):
         self.label_table_name.setGeometry(QtCore.QRect(20, 20, 61, 16))
         self.label_table_name.setText('Table name')
 
-        self.line_edit_table_name = QtWidgets.QLineEdit(self)
+        self.line_edit_table_name = ClickableLineEdit(self)
         self.line_edit_table_name.setGeometry(QtCore.QRect(20, 40, 191, 20))
+        # noinspection PyUnresolvedReferences
+        self.line_edit_table_name.clicked.connect(self.clear_name_line_edit_color)
+        self.line_edit_table_name.property("qmouse")
 
         self.label_columns = QtWidgets.QLabel(self)
         self.label_columns.setGeometry(QtCore.QRect(20, 80, 61, 16))
@@ -74,7 +87,7 @@ class AddTableWindow(QtWidgets.QWidget):
         self.columns_table.verticalHeader().setVisible(True)
         self.columns_table.setColumnWidth(1, 96)
 
-        self.columns_table.clicked.connect(self.clear_color)
+        self.columns_table.clicked.connect(self.clear_cell_color)
 
         self.setWindowTitle('Add table')
         QtCore.QMetaObject.connectSlotsByName(self)
@@ -104,6 +117,12 @@ class AddTableWindow(QtWidgets.QWidget):
 
     def get_table_data(self):
         table_name = self.line_edit_table_name.text()
+        if not table_name:
+            raise EmptyTableNameError()
+
+        if not re.match(NAMING_PATTERN, table_name):
+            raise IllegalTableNameError()
+
         data = {}
 
         for row_index in range(self.columns_table.rowCount()):
@@ -123,14 +142,23 @@ class AddTableWindow(QtWidgets.QWidget):
 
         return table_name, data
 
-    def clear_color(self, cell_index: QtCore.QModelIndex):
+    def clear_cell_color(self, cell_index: QtCore.QModelIndex):
         cell = self.columns_table.item(cell_index.row(), cell_index.column())
         cell.setBackground(QtGui.QColor(0, 0, 0, 0))
         cell.setToolTip('')
 
+    def clear_name_line_edit_color(self):
+        self.line_edit_table_name.setStyleSheet('QLineEdit {background: white;}')
+        self.line_edit_table_name.setToolTip('')
+
     def confirm(self):
         try:
             table_name, data = self.get_table_data()
+        except EmptyTableNameError:
+            self.highlight_table_name_line_edit('Table name should not be empty')
+
+        except IllegalTableNameError:
+            self.highlight_table_name_line_edit('Table should only contain characters, numbers or _')
 
         except EmptyColumnNameError as empty_name_error:
             row_index = empty_name_error.row_index
@@ -155,6 +183,10 @@ class AddTableWindow(QtWidgets.QWidget):
         cell.setBackground(QtGui.QColor(255, 0, 0, 127))
         cell.setToolTip(tool_tip)
         self.columns_table.clearSelection()
+
+    def highlight_table_name_line_edit(self, tool_tip):
+        self.line_edit_table_name.setStyleSheet('QLineEdit {background: rgb(255, 0, 0, 127);}')
+        self.line_edit_table_name.setToolTip(tool_tip)
 
     def cancel(self):
         self.close()
