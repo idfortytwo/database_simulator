@@ -133,8 +133,8 @@ class AddTableWindow(QtWidgets.QWidget):
             row_index = empty_name_error.row_index
             self.highlight_column_name_cell(row_index, 'Column names should not be empty')
 
-        except IllegalColumnNameError as duplicate_error:
-            row_index = duplicate_error.row_index
+        except IllegalColumnNameError as illegal_name_error:
+            row_index = illegal_name_error.row_index
             self.highlight_column_name_cell(row_index, 'Column name should only contain characters, numbers or _')
 
         except DuplicateColumnNameError as duplicate_error:
