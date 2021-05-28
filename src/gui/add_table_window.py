@@ -7,6 +7,9 @@ from db.exceptions import DuplicateColumnNameError, EmptyColumnNameError, Illega
 from db.table import Table
 
 
+NAMING_PATTERN = '^[A-Za-zżźćńółęąśŻŹĆĄŚĘŁÓŃ0-9_]*$'
+
+
 class TypeComboBox(QtWidgets.QComboBox):
     def __init__(self, data_types):
         super().__init__()
@@ -110,7 +113,7 @@ class AddTableWindow(QtWidgets.QWidget):
             if not column_name:
                 raise EmptyColumnNameError(row_index)
 
-            if not re.match('^[A-Za-zżźćńółęąśŻŹĆĄŚĘŁÓŃ0-9_]*$', column_name):
+            if not re.match(NAMING_PATTERN, column_name):
                 raise IllegalColumnNameError(row_index)
 
             if column_name not in data.keys():
