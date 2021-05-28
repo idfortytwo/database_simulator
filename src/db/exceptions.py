@@ -25,3 +25,9 @@ class DuplicateColumnNameError(Error):
     def __init__(self, row_index):
         self.row_index = row_index
         self.message = f'duplicate column name at row {row_index}'
+
+
+class EmptyColumnNameError(Error):
+    def __init__(self, row_index):
+        self.row_index = row_index
+        self.message = f'empty column name at row {row_index}'

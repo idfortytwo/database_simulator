@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from db import data_types
-from db.exceptions import DuplicateColumnNameError
+from db.exceptions import DuplicateColumnNameError, EmptyColumnNameError
 from db.table import Table
 
 
@@ -74,7 +74,6 @@ class AddTableWindow(QtWidgets.QWidget):
         self.setWindowTitle('Add table')
         QtCore.QMetaObject.connectSlotsByName(self)
 
-    # TODO: check if table name is empty
     def add_column(self):
         row = self.columns_table.rowCount()
         self.columns_table.setRowCount(row + 1)
@@ -106,6 +105,9 @@ class AddTableWindow(QtWidgets.QWidget):
             column_name = self.columns_table.item(row_index, 0).text()
             column_type = self.columns_table.cellWidget(row_index, 1).currentText()
 
+            if not column_name:
+                raise EmptyColumnNameError(row_index)
+
             if column_name not in data.keys():
                 data[column_name] = column_type
             else:
@@ -126,11 +128,21 @@ class AddTableWindow(QtWidgets.QWidget):
             row_index = duplicate_error.row_index
             self.highlight_duplicated_row(row_index)
 
+        except EmptyColumnNameError as empty_name_error:
+            row_index = empty_name_error.row_index
+            self.highlight_empty_row(row_index)
+
         else:
             table = Table(data)
             self.db.add_table(table, table_name)
             self.main_window.fill_tables_table()
             self.close()
+
+    def highlight_empty_row(self, row_index):
+        empty_cell = self.columns_table.item(row_index, 0)
+        empty_cell.setBackground(QtGui.QColor(255, 0, 0, 127))
+        empty_cell.setToolTip('Column names should not be empty')
+        self.columns_table.clearSelection()
 
     def highlight_duplicated_row(self, row_index):
         duplicate_cell = self.columns_table.item(row_index, 0)
