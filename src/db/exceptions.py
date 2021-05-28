@@ -31,3 +31,9 @@ class EmptyColumnNameError(Error):
     def __init__(self, row_index):
         self.row_index = row_index
         self.message = f'empty column name at row {row_index}'
+
+
+class IllegalColumnNameError(Error):
+    def __init__(self, row_index):
+        self.row_index = row_index
+        self.message = f'illegal characters in column name at row {row_index}'

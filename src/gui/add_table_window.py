@@ -1,7 +1,9 @@
+import re
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from db import data_types
-from db.exceptions import DuplicateColumnNameError, EmptyColumnNameError
+from db.exceptions import DuplicateColumnNameError, EmptyColumnNameError, IllegalColumnNameError
 from db.table import Table
 
 
@@ -102,11 +104,14 @@ class AddTableWindow(QtWidgets.QWidget):
         data = {}
 
         for row_index in range(self.columns_table.rowCount()):
-            column_name = self.columns_table.item(row_index, 0).text()
+            column_name = self.columns_table.item(row_index, 0).text().strip()
             column_type = self.columns_table.cellWidget(row_index, 1).currentText()
 
             if not column_name:
                 raise EmptyColumnNameError(row_index)
+
+            if not re.match('^[A-Za-zżźćńółęąśŻŹĆĄŚĘŁÓŃ0-9_]*$', column_name):
+                raise IllegalColumnNameError(row_index)
 
             if column_name not in data.keys():
                 data[column_name] = column_type
@@ -124,13 +129,17 @@ class AddTableWindow(QtWidgets.QWidget):
         try:
             table_name, data = self.get_table_data()
 
-        except DuplicateColumnNameError as duplicate_error:
-            row_index = duplicate_error.row_index
-            self.highlight_column_name_cell(row_index, 'Column names should be unique')
-
         except EmptyColumnNameError as empty_name_error:
             row_index = empty_name_error.row_index
             self.highlight_column_name_cell(row_index, 'Column names should not be empty')
+
+        except IllegalColumnNameError as duplicate_error:
+            row_index = duplicate_error.row_index
+            self.highlight_column_name_cell(row_index, 'Column name should only contain characters, numbers or _')
+
+        except DuplicateColumnNameError as duplicate_error:
+            row_index = duplicate_error.row_index
+            self.highlight_column_name_cell(row_index, 'Column names should be unique')
 
         else:
             table = Table(data)
