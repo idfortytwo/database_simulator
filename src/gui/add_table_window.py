@@ -126,11 +126,11 @@ class AddTableWindow(QtWidgets.QWidget):
 
         except DuplicateColumnNameError as duplicate_error:
             row_index = duplicate_error.row_index
-            self.highlight_duplicated_row(row_index)
+            self.highlight_column_name_cell(row_index, 'Column names should be unique')
 
         except EmptyColumnNameError as empty_name_error:
             row_index = empty_name_error.row_index
-            self.highlight_empty_row(row_index)
+            self.highlight_column_name_cell(row_index, 'Column names should not be empty')
 
         else:
             table = Table(data)
@@ -138,16 +138,10 @@ class AddTableWindow(QtWidgets.QWidget):
             self.main_window.fill_tables_table()
             self.close()
 
-    def highlight_empty_row(self, row_index):
-        empty_cell = self.columns_table.item(row_index, 0)
-        empty_cell.setBackground(QtGui.QColor(255, 0, 0, 127))
-        empty_cell.setToolTip('Column names should not be empty')
-        self.columns_table.clearSelection()
-
-    def highlight_duplicated_row(self, row_index):
-        duplicate_cell = self.columns_table.item(row_index, 0)
-        duplicate_cell.setBackground(QtGui.QColor(255, 0, 0, 127))
-        duplicate_cell.setToolTip('Column names should be unique')
+    def highlight_column_name_cell(self, row_index, tool_tip):
+        cell = self.columns_table.item(row_index, 0)
+        cell.setBackground(QtGui.QColor(255, 0, 0, 127))
+        cell.setToolTip(tool_tip)
         self.columns_table.clearSelection()
 
     def cancel(self):
