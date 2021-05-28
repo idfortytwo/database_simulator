@@ -124,18 +124,19 @@ class AddTableWindow(QtWidgets.QWidget):
 
         except DuplicateColumnNameError as duplicate_error:
             row_index = duplicate_error.row_index
-            duplicate_cell = self.columns_table.item(row_index, 0)
-            duplicate_cell.setBackground(QtGui.QColor(255, 0, 0, 127))
-            duplicate_cell.setToolTip('Column names should be unique')
-            self.columns_table.clearSelection()
+            self.highlight_duplicated_row(row_index)
 
         else:
             table = Table(data)
             self.db.add_table(table, table_name)
-
             self.main_window.fill_tables_table()
-
             self.close()
+
+    def highlight_duplicated_row(self, row_index):
+        duplicate_cell = self.columns_table.item(row_index, 0)
+        duplicate_cell.setBackground(QtGui.QColor(255, 0, 0, 127))
+        duplicate_cell.setToolTip('Column names should be unique')
+        self.columns_table.clearSelection()
 
     def cancel(self):
         self.close()
