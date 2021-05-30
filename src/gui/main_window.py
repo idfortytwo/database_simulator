@@ -102,19 +102,22 @@ class DatabaseWindow(QtWidgets.QMainWindow):
             item = QtWidgets.QTableWidgetItem(row)
             self.table_names_table.setItem(i, 0, item)
 
-    # TODO: show column data types as tooltips
     def refill_table_data(self, row):
         table_name = self.table_names_table.item(row, 0).text()
         table = self.db.get_table(table_name)
 
-        headers = table.column_names
+        column_names = table.column_names
+        column_types = table.column_types
         rows = table.data
 
         self.table_data_table.clear()
 
-        self.table_data_table.setColumnCount(len(headers))
-        self.table_data_table.setHorizontalHeaderLabels(headers)
+        self.table_data_table.setColumnCount(len(column_names))
+        self.table_data_table.setHorizontalHeaderLabels(column_names)
         self.table_data_table.setRowCount(len(rows))
+
+        for col, column_type in enumerate(column_types):
+            self.table_data_table.horizontalHeaderItem(col).setToolTip(str(column_type))
 
         for i, row in enumerate(rows):
             for j, value in enumerate(row):
