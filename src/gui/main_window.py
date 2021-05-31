@@ -2,11 +2,21 @@ import re
 import sys
 
 from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import pyqtSignal
 
 from db.database import Database
+from db.exceptions import ColumnNotFoundError
 from db.table import Table
 from gui.add_table_window import AddTableWindow
 from gui.confirm_removal_window import ConfirmRemovalMessageBox
+
+
+class ClickableLineEdit(QtWidgets.QLineEdit):
+    clicked = pyqtSignal()
+
+    def mousePressEvent(self, event):
+        # noinspection PyUnresolvedReferences
+        self.clicked.emit()
 
 
 class DatabaseWindow(QtWidgets.QMainWindow):
@@ -34,8 +44,11 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.remove_table_button.setText('Remove table')
         self.remove_table_button.clicked.connect(self.remove_table)
 
-        self.query_line_edit = QtWidgets.QLineEdit(self.centralwidget)
+        self.query_line_edit = ClickableLineEdit(self.centralwidget)
         self.query_line_edit.setGeometry(QtCore.QRect(220, 30, 801, 41))
+        # noinspection PyUnresolvedReferences
+        self.query_line_edit.clicked.connect(self.clear_line_edit)
+
         self.filter_button = QtWidgets.QPushButton(self.centralwidget)
         self.filter_button.setGeometry(QtCore.QRect(1030, 30, 71, 41))
         self.filter_button.setText('Filter')
@@ -97,15 +110,29 @@ class DatabaseWindow(QtWidgets.QMainWindow):
 
         def name_to_index(match: re.Match):
             column_name = match.group(1)
-            column_index = self.current_table.column_names.index(column_name)
+            try:
+                column_index = self.current_table.column_names.index(column_name)
+            except ValueError:
+                raise ColumnNotFoundError(column_name, self.current_table_name)
             return str(column_index)
 
         return p.sub(name_to_index, query)
 
     def filter_data(self):
-        query = self.query_line_edit.text()
-        rows = [row for row in filter(eval(self.parse_query(query)), self.current_table)]
-        self.fill_data_table(rows)
+        try:
+            parsed_query = self.parse_query(self.query_line_edit.text())
+
+        except ColumnNotFoundError as column_not_found:
+            self.query_line_edit.setStyleSheet('QLineEdit {background: rgb(255, 0, 0, 127);}')
+            self.query_line_edit.setToolTip(f'No such column: {column_not_found.column_name}')
+
+        else:
+            rows = [row for row in filter(eval(parsed_query), self.current_table)]
+            self.fill_data_table(rows)
+
+    def clear_line_edit(self):
+        self.query_line_edit.setStyleSheet('QLineEdit {background: white;}')
+        self.query_line_edit.setToolTip('')
 
     def add_table(self):
         if not self.add_table_window:

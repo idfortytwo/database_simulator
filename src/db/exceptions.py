@@ -47,3 +47,10 @@ class EmptyTableNameError(Error):
 class IllegalTableNameError(Error):
     def __init__(self):
         self.message = f'illegal characters in table name'
+
+
+class ColumnNotFoundError(Error):
+    def __init__(self, column_name, table_name):
+        self.column_name = column_name
+        self.table_name = table_name
+        self.message = f'no such column in table {table_name}: {column_name}'
