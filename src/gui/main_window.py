@@ -3,6 +3,7 @@ import sys
 from PyQt5 import QtCore, QtWidgets
 
 from db.database import Database
+from db.table import Table
 from gui.add_table_window import AddTableWindow
 from gui.confirm_removal_window import ConfirmRemovalMessageBox
 
@@ -11,6 +12,8 @@ class DatabaseWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.db = Database()
+        self.current_table: Table = Table({})
+        self.current_table_name: str = ''
 
         self.add_table_window = None
         self.setup_UI()
@@ -106,6 +109,10 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         if removed_tables:
             self.fill_tables_table()
 
+            if self.current_table_name in removed_tables:
+                self.table_data_table.setRowCount(0)
+                self.table_data_table.setColumnCount(0)
+
     def fill_tables_table(self):
         table_names = self.db.get_table_names()
         self.table_names_table.setRowCount(len(table_names))
@@ -115,11 +122,12 @@ class DatabaseWindow(QtWidgets.QMainWindow):
 
     def refill_table_data(self, row):
         table_name = self.table_names_table.item(row, 0).text()
-        table = self.db.get_table(table_name)
+        self.current_table_name = table_name
+        self.current_table = self.db.get_table(table_name)
 
-        column_names = table.column_names
-        column_types = table.column_types
-        rows = table.data
+        column_names = self.current_table.column_names
+        column_types = self.current_table.column_types
+        rows = self.current_table.data
 
         self.table_data_table.clear()
 
