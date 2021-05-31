@@ -32,9 +32,9 @@ class DatabaseWindow(QtWidgets.QMainWindow):
 
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit.setGeometry(QtCore.QRect(220, 30, 801, 41))
-        self.search_button = QtWidgets.QPushButton(self.centralwidget)
-        self.search_button.setGeometry(QtCore.QRect(1030, 30, 71, 41))
-        self.search_button.setText("Search")
+        self.filter_button = QtWidgets.QPushButton(self.centralwidget)
+        self.filter_button.setGeometry(QtCore.QRect(1030, 30, 71, 41))
+        self.filter_button.setText('Filter')
 
         self.table_names_table = QtWidgets.QTableWidget(self.centralwidget)
         self.table_names_table.setGeometry(QtCore.QRect(30, 30, 171, 321))
