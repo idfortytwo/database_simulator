@@ -25,8 +25,6 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.add_table_button.setText('Add table')
         self.add_table_button.clicked.connect(self.add_table)
 
-        # TODO: remove table function
-        # TODO: ask for confirmation
         self.remove_table_button = QtWidgets.QPushButton(self.centralwidget)
         self.remove_table_button.setGeometry(QtCore.QRect(30, 390, 91, 23))
         self.remove_table_button.setText('Remove table')
