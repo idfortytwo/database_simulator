@@ -4,11 +4,7 @@ from PyQt5 import QtCore, QtWidgets
 
 from db.database import Database
 from gui.add_table_window import AddTableWindow
-
-
-class ConfirmRemoval(QtWidgets.QWidget):
-    def __init__(self):
-        super().__init__()
+from gui.confirm_removal_window import ConfirmRemovalMessageBox
 
 
 class DatabaseWindow(QtWidgets.QMainWindow):
@@ -34,6 +30,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.remove_table_button = QtWidgets.QPushButton(self.centralwidget)
         self.remove_table_button.setGeometry(QtCore.QRect(30, 390, 91, 23))
         self.remove_table_button.setText('Remove table')
+        self.remove_table_button.clicked.connect(self.remove_table)
 
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit.setGeometry(QtCore.QRect(220, 30, 801, 41))
@@ -95,6 +92,21 @@ class DatabaseWindow(QtWidgets.QMainWindow):
             self.add_table_window.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
             self.add_table_window.show()
 
+    def remove_table(self):
+        selected_tables_indexes = self.table_names_table.selectedIndexes()
+        removed_tables = []
+        for table_index in selected_tables_indexes:
+            table_name = self.table_names_table.item(table_index.row(), 0).text()
+
+            confirmation_window = ConfirmRemovalMessageBox(
+                self, f'Are you sure you want to delete table "{table_name}"?')
+            if confirmation_window.ask():
+                self.db.drop_table(table_name)
+                removed_tables.append(table_name)
+
+        if removed_tables:
+            self.fill_tables_table()
+
     def fill_tables_table(self):
         table_names = self.db.get_table_names()
         self.table_names_table.setRowCount(len(table_names))
@@ -144,6 +156,7 @@ def main():
 if __name__ == '__main__':
     def except_hook(cls, exception, traceback):
         sys.__excepthook__(cls, exception, traceback)
+
 
     sys.excepthook = except_hook
     main()
