@@ -30,8 +30,8 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.remove_table_button.setText('Remove table')
         self.remove_table_button.clicked.connect(self.remove_table)
 
-        self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit.setGeometry(QtCore.QRect(220, 30, 801, 41))
+        self.query_line_edit = QtWidgets.QLineEdit(self.centralwidget)
+        self.query_line_edit.setGeometry(QtCore.QRect(220, 30, 801, 41))
         self.filter_button = QtWidgets.QPushButton(self.centralwidget)
         self.filter_button.setGeometry(QtCore.QRect(1030, 30, 71, 41))
         self.filter_button.setText('Filter')
