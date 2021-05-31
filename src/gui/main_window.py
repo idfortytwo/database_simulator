@@ -1,3 +1,4 @@
+import re
 import sys
 
 from PyQt5 import QtCore, QtWidgets
@@ -38,6 +39,8 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.filter_button = QtWidgets.QPushButton(self.centralwidget)
         self.filter_button.setGeometry(QtCore.QRect(1030, 30, 71, 41))
         self.filter_button.setText('Filter')
+        self.filter_button.clicked.connect(self.filter_data)
+        self.filter_button.setDisabled(True)
 
         self.table_names_table = QtWidgets.QTableWidget(self.centralwidget)
         self.table_names_table.setGeometry(QtCore.QRect(30, 30, 171, 321))
@@ -88,6 +91,22 @@ class DatabaseWindow(QtWidgets.QMainWindow):
 
         self.db.save(filename)
 
+    def parse_query(self, query):
+        pattern = r'\"(\w+)\"'
+        p = re.compile(pattern)
+
+        def name_to_index(match: re.Match):
+            column_name = match.group(1)
+            column_index = self.current_table.column_names.index(column_name)
+            return str(column_index)
+
+        return p.sub(name_to_index, query)
+
+    def filter_data(self):
+        query = self.query_line_edit.text()
+        rows = [row for row in filter(eval(self.parse_query(query)), self.current_table)]
+        self.fill_data_table(rows)
+
     def add_table(self):
         if not self.add_table_window:
             self.add_table_window = AddTableWindow(self)
@@ -112,6 +131,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
             if self.current_table_name in removed_tables:
                 self.table_data_table.setRowCount(0)
                 self.table_data_table.setColumnCount(0)
+                self.filter_button.setDisabled(True)
 
     def fill_tables_table(self):
         table_names = self.db.get_table_names()
@@ -119,6 +139,13 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         for i, row in enumerate(table_names):
             item = QtWidgets.QTableWidgetItem(row)
             self.table_names_table.setItem(i, 0, item)
+
+    def fill_data_table(self, rows):
+        self.table_data_table.setRowCount(len(rows))
+        for i, row in enumerate(rows):
+            for j, value in enumerate(row):
+                item = QtWidgets.QTableWidgetItem(str(value))
+                self.table_data_table.setItem(i, j, item)
 
     def refill_table_data(self, row):
         table_name = self.table_names_table.item(row, 0).text()
@@ -133,15 +160,13 @@ class DatabaseWindow(QtWidgets.QMainWindow):
 
         self.table_data_table.setColumnCount(len(column_names))
         self.table_data_table.setHorizontalHeaderLabels(column_names)
-        self.table_data_table.setRowCount(len(rows))
 
         for col, column_type in enumerate(column_types):
             self.table_data_table.horizontalHeaderItem(col).setToolTip(str(column_type))
 
-        for i, row in enumerate(rows):
-            for j, value in enumerate(row):
-                item = QtWidgets.QTableWidgetItem(str(value))
-                self.table_data_table.setItem(i, j, item)
+        self.fill_data_table(rows)
+
+        self.filter_button.setDisabled(False)
 
     def closeEvent(self, a0):
         if self.add_table_window:
