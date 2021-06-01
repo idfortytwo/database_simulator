@@ -105,7 +105,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.db.save(filename)
 
     def parse_query(self, query):
-        pattern = r'\"(\w+)\"'
+        pattern = r'\[[\"|\'](\w+)[\"|\']\]'
         p = re.compile(pattern)
 
         def name_to_index(match: re.Match):
@@ -114,7 +114,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
                 column_index = self.current_table.column_names.index(column_name)
             except ValueError:
                 raise ColumnNotFoundError(column_name, self.current_table_name)
-            return str(column_index)
+            return f'[{column_index}]'
 
         return p.sub(name_to_index, query)
 
