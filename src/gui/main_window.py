@@ -127,7 +127,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
             self.query_line_edit.setToolTip(f'No such column: {column_not_found.column_name}')
 
         else:
-            rows = [row for row in filter(eval(parsed_query), self.current_table)]
+            rows = list(filter(eval(parsed_query), self.current_table))
             self.fill_data_table(rows)
 
     def clear_line_edit(self):
