@@ -29,6 +29,8 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.add_table_window = None
         self.setup_UI()
 
+        self.records_to_delete: list[int] = []
+
     def setup_UI(self):
         self.resize(1139, 775)
         # MainWindow.resize(800, 500)
@@ -83,6 +85,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.confirm_changes_button.setGeometry(QtCore.QRect(340, 70, 51, 21))
         self.confirm_changes_button.setText('Confirm')
         self.confirm_changes_button.setDisabled(True)
+        self.confirm_changes_button.clicked.connect(self.confirm_changes)
 
         self.table_names_table = QtWidgets.QTableWidget(self.centralwidget)
         self.table_names_table.setGeometry(QtCore.QRect(30, 30, 171, 321))
@@ -198,10 +201,40 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         for j in range(self.table_data_table.columnCount()):
             self.table_data_table.setItem(row_count, j, QtWidgets.QTableWidgetItem())
 
+        self.table_data_table.setVerticalHeaderItem(row_count, QtWidgets.QTableWidgetItem('+'))
+
     def remove_record(self):
         selected_records_indexes = self.table_data_table.selectedItems()
         for record_index in selected_records_indexes:
+            v_header_text = self.table_data_table.verticalHeaderItem(record_index.row()).text()
             self.table_data_table.removeRow(record_index.row())
+
+            if v_header_text != '+':
+                record_id = int(v_header_text)
+                print(f'{v_header_text=} {record_id=}')
+                self.records_to_delete.append(record_id)
+
+    def add_rows(self):
+        for row in range(self.table_data_table.rowCount()):
+            record = []
+            if self.table_data_table.verticalHeaderItem(row).text() == '+':
+                for col in range(self.table_data_table.columnCount()):
+                    value_str = self.table_data_table.item(row, col).text()
+                    data_type = self.current_table.column_types[col]
+                    value = data_type.convert(value_str)
+
+                    record.append(value)
+                self.current_table.insert(record)
+
+    def delete_rows(self):
+        for record_id in self.records_to_delete:
+            self.current_table.delete(record_id)
+        self.records_to_delete.clear()
+
+    def confirm_changes(self):
+        self.add_rows()
+        self.delete_rows()
+        self.fill_data_table(self.current_table.data)
 
     def fill_tables_table(self):
         table_names = self.db.get_table_names()
