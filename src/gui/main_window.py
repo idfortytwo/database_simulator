@@ -55,6 +55,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.reset_button = QtWidgets.QPushButton(self.centralwidget)
         self.reset_button.setGeometry(QtCore.QRect(980, 30, 51, 31))
         self.reset_button.setText('Reset')
+        self.reset_button.clicked.connect(self.reset_data)
 
         self.filter_button = QtWidgets.QPushButton(self.centralwidget)
         self.filter_button.setGeometry(QtCore.QRect(1040, 30, 61, 31))
@@ -136,6 +137,9 @@ class DatabaseWindow(QtWidgets.QMainWindow):
             return f'[{column_index}]'
 
         return p.sub(name_to_index, query)
+
+    def reset_data(self):
+        self.fill_data_table(self.current_table.data)
 
     def filter_data(self):
         try:
