@@ -41,10 +41,10 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.add_table_button.setText('Add table')
         self.add_table_button.clicked.connect(self.add_table)
 
-        self.remove_table_button = QtWidgets.QPushButton(self.centralwidget)
-        self.remove_table_button.setGeometry(QtCore.QRect(30, 390, 91, 23))
-        self.remove_table_button.setText('Remove table')
-        self.remove_table_button.clicked.connect(self.remove_table)
+        self.delete_table_button = QtWidgets.QPushButton(self.centralwidget)
+        self.delete_table_button.setGeometry(QtCore.QRect(30, 390, 91, 23))
+        self.delete_table_button.setText('Delete table')
+        self.delete_table_button.clicked.connect(self.delete_table)
 
         self.query_line_edit = ClickableLineEdit(self.centralwidget)
         self.query_line_edit.setGeometry(QtCore.QRect(220, 30, 751, 31))
@@ -75,11 +75,11 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.add_record_button.setDisabled(True)
         self.add_record_button.clicked.connect(self.add_record)
 
-        self.remove_record_button = QtWidgets.QPushButton(self.centralwidget)
-        self.remove_record_button.setGeometry(QtCore.QRect(300, 70, 21, 20))
-        self.remove_record_button.setText('-')
-        self.remove_record_button.setDisabled(True)
-        self.remove_record_button.clicked.connect(self.remove_record)
+        self.delete_record_button = QtWidgets.QPushButton(self.centralwidget)
+        self.delete_record_button.setGeometry(QtCore.QRect(300, 70, 21, 20))
+        self.delete_record_button.setText('-')
+        self.delete_record_button.setDisabled(True)
+        self.delete_record_button.clicked.connect(self.delete_record)
 
         self.confirm_changes_button = QtWidgets.QPushButton(self.centralwidget)
         self.confirm_changes_button.setGeometry(QtCore.QRect(340, 70, 51, 21))
@@ -87,18 +87,18 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.confirm_changes_button.setDisabled(True)
         self.confirm_changes_button.clicked.connect(self.confirm_changes)
 
-        self.table_names_table = QtWidgets.QTableWidget(self.centralwidget)
-        self.table_names_table.setGeometry(QtCore.QRect(30, 30, 171, 321))
-        self.table_names_table.setColumnCount(1)
-        self.table_names_table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.table_names_table.cellDoubleClicked.connect(self.refill_table_data)
-        self.table_names_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
-        self.table_names_table.setHorizontalHeaderLabels(['Table name'])
+        self.table_names = QtWidgets.QTableWidget(self.centralwidget)
+        self.table_names.setGeometry(QtCore.QRect(30, 30, 171, 321))
+        self.table_names.setColumnCount(1)
+        self.table_names.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.table_names.cellDoubleClicked.connect(self.load_table)
+        self.table_names.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.table_names.setHorizontalHeaderLabels(['Table name'])
 
-        self.table_data_table = QtWidgets.QTableWidget(self.centralwidget)
-        self.table_data_table.setGeometry(QtCore.QRect(220, 100, 881, 641))
-        self.table_data_table.setColumnCount(0)
-        self.table_data_table.setRowCount(0)
+        self.data_table = QtWidgets.QTableWidget(self.centralwidget)
+        self.data_table.setGeometry(QtCore.QRect(220, 100, 881, 641))
+        self.data_table.setColumnCount(0)
+        self.data_table.setRowCount(0)
 
         self.load_db_button = QtWidgets.QPushButton(self.centralwidget)
         self.load_db_button.setGeometry(QtCore.QRect(30, 670, 91, 31))
@@ -125,7 +125,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
             return
 
         self.db.load(filename)
-        self.fill_tables_table()
+        self.load_table_names()
 
     def save_db(self):
         filename = QtWidgets.QFileDialog.getSaveFileName(
@@ -151,7 +151,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         return p.sub(name_to_index, query)
 
     def reset_data(self):
-        self.fill_data_table(self.current_table.data)
+        self.refresh_table_data(self.current_table.data)
 
     def filter_data(self):
         try:
@@ -163,7 +163,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
 
         else:  # lambda row: row['integer'] in [1, 3, 50, 70]
             rows = dict(filter(eval(parsed_query), self.current_table.data.items()))
-            self.fill_data_table(rows)
+            self.refresh_table_data(rows)
 
     def clear_line_edit(self):
         self.query_line_edit.setStyleSheet('QLineEdit {background: white;}')
@@ -175,103 +175,103 @@ class DatabaseWindow(QtWidgets.QMainWindow):
             self.add_table_window.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
             self.add_table_window.show()
 
-    def remove_table(self):
-        selected_tables_indexes = self.table_names_table.selectedIndexes()
-        removed_tables = []
+    def delete_table(self):
+        selected_tables_indexes = self.table_names.selectedIndexes()
+        tables_to_delete = []
         for table_index in selected_tables_indexes:
-            table_name = self.table_names_table.item(table_index.row(), 0).text()
+            table_name = self.table_names.item(table_index.row(), 0).text()
 
             confirmation_window = ConfirmRemovalMessageBox(
-                self, f'Are you sure you want to delete table "{table_name}"?')
+                self, f'Are you sure you want to delte table "{table_name}"?')
             if confirmation_window.ask():
                 self.db.drop_table(table_name)
-                removed_tables.append(table_name)
+                tables_to_delete.append(table_name)
 
-        if removed_tables:
-            self.fill_tables_table()
+        if tables_to_delete:
+            self.load_table_names()
 
-            if self.current_table_name in removed_tables:
-                self.table_data_table.setRowCount(0)
-                self.table_data_table.setColumnCount(0)
+            if self.current_table_name in tables_to_delete:
+                self.data_table.setRowCount(0)
+                self.data_table.setColumnCount(0)
                 self.filter_button.setDisabled(True)
 
     def add_record(self):
-        row_count = self.table_data_table.rowCount()
-        self.table_data_table.setRowCount(row_count + 1)
-        for j in range(self.table_data_table.columnCount()):
-            self.table_data_table.setItem(row_count, j, QtWidgets.QTableWidgetItem())
+        row_count = self.data_table.rowCount()
+        self.data_table.setRowCount(row_count + 1)
+        for j in range(self.data_table.columnCount()):
+            self.data_table.setItem(row_count, j, QtWidgets.QTableWidgetItem())
 
-        self.table_data_table.setVerticalHeaderItem(row_count, QtWidgets.QTableWidgetItem('+'))
+        self.data_table.setVerticalHeaderItem(row_count, QtWidgets.QTableWidgetItem('+'))
 
-    def remove_record(self):
-        selected_records_indexes = self.table_data_table.selectedItems()
+    def delete_record(self):
+        selected_records_indexes = self.data_table.selectedItems()
         for record_index in selected_records_indexes:
-            v_header_text = self.table_data_table.verticalHeaderItem(record_index.row()).text()
-            self.table_data_table.removeRow(record_index.row())
+            v_header_text = self.data_table.verticalHeaderItem(record_index.row()).text()
+            self.data_table.removeRow(record_index.row())
 
             if v_header_text != '+':
                 record_id = int(v_header_text)
                 print(f'{v_header_text=} {record_id=}')
                 self.records_to_delete.append(record_id)
 
-    def add_rows(self):
-        for row in range(self.table_data_table.rowCount()):
+    def add_records(self):
+        for row in range(self.data_table.rowCount()):
             record = []
-            if self.table_data_table.verticalHeaderItem(row).text() == '+':
-                for col in range(self.table_data_table.columnCount()):
-                    value_str = self.table_data_table.item(row, col).text()
+            if self.data_table.verticalHeaderItem(row).text() == '+':
+                for col in range(self.data_table.columnCount()):
+                    value_str = self.data_table.item(row, col).text()
                     data_type = self.current_table.column_types[col]
                     value = data_type.convert(value_str)
 
                     record.append(value)
                 self.current_table.insert(record)
 
-    def delete_rows(self):
+    def delete_records(self):
         for record_id in self.records_to_delete:
             self.current_table.delete(record_id)
         self.records_to_delete.clear()
 
     def confirm_changes(self):
-        self.add_rows()
-        self.delete_rows()
-        self.fill_data_table(self.current_table.data)
+        self.add_records()
+        self.delete_records()
+        self.refresh_table_data(self.current_table.data)
 
-    def fill_tables_table(self):
+    def load_table_names(self):
         table_names = self.db.get_table_names()
-        self.table_names_table.setRowCount(len(table_names))
+        self.table_names.setRowCount(len(table_names))
         for i, row in enumerate(table_names):
             item = QtWidgets.QTableWidgetItem(row)
-            self.table_names_table.setItem(i, 0, item)
+            self.table_names.setItem(i, 0, item)
 
-    def fill_data_table(self, data):
-        self.table_data_table.setRowCount(len(data))
+    def refresh_table_data(self, data):
+        self.data_table.setRowCount(len(data))
         for i, (record_id, record) in enumerate(data.items()):
             for j, value in enumerate(record):
                 item = QtWidgets.QTableWidgetItem(str(value))
-                self.table_data_table.setItem(i, j, item)
-                self.table_data_table.setVerticalHeaderItem(i, QtWidgets.QTableWidgetItem(str(record_id)))
+                self.data_table.setItem(i, j, item)
+                self.data_table.setVerticalHeaderItem(i, QtWidgets.QTableWidgetItem(str(record_id)))
 
-    def refill_table_data(self, row):
-        table_name = self.table_names_table.item(row, 0).text()
+    def load_table(self, row):
+        table_name = self.table_names.item(row, 0).text()
         self.current_table_name = table_name
         self.current_table = self.db.get_table(table_name)
 
         column_names = self.current_table.column_names
         column_types = self.current_table.column_types
 
-        self.table_data_table.clear()
+        self.data_table.clear()
 
-        self.table_data_table.setColumnCount(len(column_names))
-        self.table_data_table.setHorizontalHeaderLabels(column_names)
+        self.data_table.setColumnCount(len(column_names))
+        self.data_table.setHorizontalHeaderLabels(column_names)
 
         for col, column_type in enumerate(column_types):
-            self.table_data_table.horizontalHeaderItem(col).setToolTip(str(column_type))
+            self.data_table.horizontalHeaderItem(col).setToolTip(str(column_type))
 
-        self.fill_data_table(self.current_table.data)
+        self.refresh_table_data(self.current_table.data)
 
         self.filter_button.setDisabled(False)
         self.add_record_button.setDisabled(False)
-        self.remove_record_button.setDisabled(False)
+        self.delete_record_button.setDisabled(False)
         self.confirm_changes_button.setDisabled(False)
 
     def closeEvent(self, a0):
@@ -291,8 +291,8 @@ def main():
     app = QtWidgets.QApplication(sys.argv)
     w = DatabaseWindow()
     w.db.load('kek.db')
-    w.fill_tables_table()
-    w.refill_table_data(0)
+    w.load_table_names()
+    w.load_table(0)
     w.show()
     app.exec()
 

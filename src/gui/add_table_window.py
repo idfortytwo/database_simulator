@@ -174,7 +174,7 @@ class AddTableWindow(QtWidgets.QWidget):
         else:
             table = Table(data)
             self.db.add_table(table, table_name)
-            self.main_window.fill_tables_table()
+            self.main_window.load_table_names()
             self.close()
 
     def highlight_column_name_cell(self, row_index, tool_tip):
