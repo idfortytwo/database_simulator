@@ -1,5 +1,5 @@
 from db.data_types import Type
-from db.exceptions import RecordIndexError
+from exceptions.exceptions import RecordIndexError
 
 
 class Table:

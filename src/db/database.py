@@ -1,6 +1,6 @@
 import pickle
 
-from db.exceptions import NoSuchTableError
+from exceptions.exceptions import NoSuchTableError
 from db.table import Table
 
 

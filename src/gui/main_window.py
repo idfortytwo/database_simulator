@@ -5,7 +5,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSignal
 
 from db.database import Database
-from db.exceptions import ColumnNotFoundError
+from exceptions.exceptions import ColumnNotFoundError
 from db.table import Table
 from gui.add_table_window import AddTableWindow
 from gui.confirm_removal_window import ConfirmRemovalMessageBox

@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSignal
 
 from db import data_types
-from db.exceptions import DuplicateColumnNameError, EmptyColumnNameError, IllegalColumnNameError, EmptyTableNameError, \
+from exceptions.exceptions import DuplicateColumnNameError, EmptyColumnNameError, IllegalColumnNameError, EmptyTableNameError, \
     IllegalTableNameError
 from db.table import Table
 
