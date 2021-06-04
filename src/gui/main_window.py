@@ -66,9 +66,6 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.records_label.setGeometry(QtCore.QRect(220, 70, 61, 16))
         self.records_label.setText('Records')
 
-        self.pushButton_7 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_7.setGeometry(QtCore.QRect(270, 70, 16, 16))
-
         self.add_record_button = QtWidgets.QPushButton(self.centralwidget)
         self.add_record_button.setGeometry(QtCore.QRect(270, 70, 16, 16))
         self.add_record_button.setText('+')
