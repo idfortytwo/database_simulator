@@ -45,18 +45,37 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.remove_table_button.clicked.connect(self.remove_table)
 
         self.query_line_edit = ClickableLineEdit(self.centralwidget)
-        self.query_line_edit.setGeometry(QtCore.QRect(220, 30, 801, 41))
+        self.query_line_edit.setGeometry(QtCore.QRect(220, 30, 751, 31))
         line_edit_font = self.query_line_edit.font()
         line_edit_font.setPixelSize(12)
         self.query_line_edit.setFont(line_edit_font)
         # noinspection PyUnresolvedReferences
         self.query_line_edit.clicked.connect(self.clear_line_edit)
 
+        self.reset_button = QtWidgets.QPushButton(self.centralwidget)
+        self.reset_button.setGeometry(QtCore.QRect(980, 30, 51, 31))
+        self.reset_button.setText('Reset')
+
         self.filter_button = QtWidgets.QPushButton(self.centralwidget)
-        self.filter_button.setGeometry(QtCore.QRect(1030, 30, 71, 41))
+        self.filter_button.setGeometry(QtCore.QRect(1040, 30, 61, 31))
         self.filter_button.setText('Filter')
         self.filter_button.clicked.connect(self.filter_data)
         self.filter_button.setDisabled(True)
+
+        self.records_label = QtWidgets.QLabel(self.centralwidget)
+        self.records_label.setGeometry(QtCore.QRect(220, 70, 61, 16))
+        self.records_label.setText('Records')
+
+        self.pushButton_7 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_7.setGeometry(QtCore.QRect(270, 70, 16, 16))
+
+        self.add_record_button = QtWidgets.QPushButton(self.centralwidget)
+        self.add_record_button.setGeometry(QtCore.QRect(270, 70, 16, 16))
+        self.add_record_button.setText('+')
+
+        self.remove_record_button = QtWidgets.QPushButton(self.centralwidget)
+        self.remove_record_button.setGeometry(QtCore.QRect(290, 70, 16, 16))
+        self.remove_record_button.setText('-')
 
         self.table_names_table = QtWidgets.QTableWidget(self.centralwidget)
         self.table_names_table.setGeometry(QtCore.QRect(30, 30, 171, 321))
@@ -67,7 +86,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.table_names_table.setHorizontalHeaderLabels(['Table name'])
 
         self.table_data_table = QtWidgets.QTableWidget(self.centralwidget)
-        self.table_data_table.setGeometry(QtCore.QRect(220, 80, 881, 661))
+        self.table_data_table.setGeometry(QtCore.QRect(220, 90, 881, 651))
         self.table_data_table.setColumnCount(0)
         self.table_data_table.setRowCount(0)
 
