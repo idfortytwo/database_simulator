@@ -70,14 +70,18 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.add_record_button = QtWidgets.QPushButton(self.centralwidget)
         self.add_record_button.setGeometry(QtCore.QRect(270, 70, 21, 21))
         self.add_record_button.setText('+')
+        self.add_record_button.setDisabled(True)
+        self.add_record_button.clicked.connect(self.add_record)
 
         self.remove_record_button = QtWidgets.QPushButton(self.centralwidget)
         self.remove_record_button.setGeometry(QtCore.QRect(300, 70, 21, 20))
         self.remove_record_button.setText('-')
+        self.remove_record_button.setDisabled(True)
 
         self.confirm_changes_button = QtWidgets.QPushButton(self.centralwidget)
         self.confirm_changes_button.setGeometry(QtCore.QRect(340, 70, 51, 21))
         self.confirm_changes_button.setText('Confirm')
+        self.confirm_changes_button.setDisabled(True)
 
         self.table_names_table = QtWidgets.QTableWidget(self.centralwidget)
         self.table_names_table.setGeometry(QtCore.QRect(30, 30, 171, 321))
@@ -187,6 +191,9 @@ class DatabaseWindow(QtWidgets.QMainWindow):
                 self.table_data_table.setColumnCount(0)
                 self.filter_button.setDisabled(True)
 
+    def add_record(self):
+        self.table_data_table.setRowCount(self.table_data_table.rowCount() + 1)
+
     def fill_tables_table(self):
         table_names = self.db.get_table_names()
         self.table_names_table.setRowCount(len(table_names))
@@ -221,6 +228,9 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.fill_data_table(rows)
 
         self.filter_button.setDisabled(False)
+        self.add_record_button.setDisabled(False)
+        self.remove_record_button.setDisabled(False)
+        self.confirm_changes_button.setDisabled(False)
 
     def closeEvent(self, a0):
         if self.add_table_window:
