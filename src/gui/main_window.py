@@ -143,7 +143,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
                 column_index = self.current_table.column_names.index(column_name)
             except ValueError:
                 raise ColumnNotFoundError(column_name, self.current_table_name)
-            return f'[{column_index}]'
+            return f'[1][{column_index}]'
 
         return p.sub(name_to_index, query)
 
@@ -158,8 +158,8 @@ class DatabaseWindow(QtWidgets.QMainWindow):
             self.query_line_edit.setStyleSheet('QLineEdit {background: rgb(255, 0, 0, 127);}')
             self.query_line_edit.setToolTip(f'No such column: {column_not_found.column_name}')
 
-        else:
-            rows = list(filter(eval(parsed_query), self.current_table))
+        else:  # lambda row: row['integer'] in [1, 3, 50, 70]
+            rows = dict(filter(eval(parsed_query), self.current_table.data.items()))
             self.fill_data_table(rows)
 
     def clear_line_edit(self):
@@ -210,12 +210,13 @@ class DatabaseWindow(QtWidgets.QMainWindow):
             item = QtWidgets.QTableWidgetItem(row)
             self.table_names_table.setItem(i, 0, item)
 
-    def fill_data_table(self, rows):
-        self.table_data_table.setRowCount(len(rows))
-        for i, row in enumerate(rows):
-            for j, value in enumerate(row):
+    def fill_data_table(self, data):
+        self.table_data_table.setRowCount(len(data))
+        for i, (record_id, record) in enumerate(data.items()):
+            for j, value in enumerate(record):
                 item = QtWidgets.QTableWidgetItem(str(value))
                 self.table_data_table.setItem(i, j, item)
+                self.table_data_table.setVerticalHeaderItem(i, QtWidgets.QTableWidgetItem(str(record_id)))
 
     def refill_table_data(self, row):
         table_name = self.table_names_table.item(row, 0).text()
@@ -224,7 +225,6 @@ class DatabaseWindow(QtWidgets.QMainWindow):
 
         column_names = self.current_table.column_names
         column_types = self.current_table.column_types
-        rows = self.current_table.data
 
         self.table_data_table.clear()
 
@@ -234,7 +234,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         for col, column_type in enumerate(column_types):
             self.table_data_table.horizontalHeaderItem(col).setToolTip(str(column_type))
 
-        self.fill_data_table(rows)
+        self.fill_data_table(self.current_table.data)
 
         self.filter_button.setDisabled(False)
         self.add_record_button.setDisabled(False)
@@ -255,13 +255,18 @@ def run_GUI():
 
 
 def main():
-    run_GUI()
+    app = QtWidgets.QApplication(sys.argv)
+    w = DatabaseWindow()
+    w.db.load('kek.db')
+    w.fill_tables_table()
+    w.refill_table_data(0)
+    w.show()
+    app.exec()
 
 
 if __name__ == '__main__':
     def except_hook(cls, exception, traceback):
         sys.__excepthook__(cls, exception, traceback)
-
-
     sys.excepthook = except_hook
+
     main()

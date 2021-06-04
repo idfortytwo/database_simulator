@@ -6,7 +6,8 @@ class Table:
     def __init__(self, columns: dict, records: list[list] = None):
         self.column_names: list[str] = list(columns.keys())
         self.column_types: list[Type] = list(columns.values())
-        self.data = []
+        self.data = {}
+        self.record_id_sequence = 0
 
         if records:
             self.batch_insert(records)
@@ -29,20 +30,23 @@ class Table:
         for value, expected_type in zip(record, self.column_types):
             expected_type.validate(value)
 
-        self.data.append(record)
+        self.data[self.record_id_sequence] = record
+        self.record_id_sequence += 1
 
     def batch_insert(self, records: list[list]):
         for record in records:
             for value, expected_type in zip(record, self.column_types):
                 expected_type.validate(value)
 
-        self.data.extend(records)
+        for record in records:
+            self.data[self.record_id_sequence] = record
+            self.record_id_sequence += 1
 
-    def delete(self, index):
+    def delete(self, record_id):
         try:
-            del self.data[index]
+            del self.data[record_id]
         except IndexError:
-            raise RecordIndexError(index)
+            raise RecordIndexError(record_id)
 
     def save(self, filename):
         with open(filename, 'w') as f:
