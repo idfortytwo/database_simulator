@@ -1,11 +1,11 @@
 import re
 import sys
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import pyqtSignal
 
 from db.database import Database
-from exceptions.exceptions import ColumnNotFoundError
+from exceptions.exceptions import ColumnNotFoundError, CellDataConversionError, ConversionError
 from db.table import Table
 from gui.add_table_window import AddTableWindow
 from gui.confirm_removal_window import ConfirmRemovalMessageBox
@@ -220,9 +220,13 @@ class DatabaseWindow(QtWidgets.QMainWindow):
                 for col in range(self.data_table.columnCount()):
                     value_str = self.data_table.item(row, col).text()
                     data_type = self.current_table.column_types[col]
-                    value = data_type.convert(value_str)
 
-                    record.append(value)
+                    try:
+                        value = data_type.convert(value_str)
+                        record.append(value)
+                    except ConversionError:
+                        raise CellDataConversionError(col, row, value_str, data_type)
+
                 self.current_table.insert(record)
 
     def delete_records(self):
@@ -230,17 +234,23 @@ class DatabaseWindow(QtWidgets.QMainWindow):
             self.current_table.delete(record_id)
 
     def confirm_changes(self):
-        self.add_records()
+        try:
+            self.add_records()
 
-        if self.records_to_delete:
-            confirmation_window = ConfirmRemovalMessageBox(
-                self, f'Are you sure you want to delete {len(self.records_to_delete)} records?')
+        except CellDataConversionError as convertion_error:
+            self.highlight_data_cell(convertion_error.col, convertion_error.row,
+                                     f'Failed to convert value to {convertion_error.data_type}')
 
-            if confirmation_window.ask():
-                self.delete_records()
-            self.records_to_delete.clear()
+        else:
+            if self.records_to_delete:
+                confirmation_window = ConfirmRemovalMessageBox(
+                    self, f'Are you sure you want to delete {len(self.records_to_delete)} records?')
 
-        self.refresh_table_data(self.current_table.data)
+                if confirmation_window.ask():
+                    self.delete_records()
+                self.records_to_delete.clear()
+
+            self.refresh_table_data(self.current_table.data)
 
     def load_table_names(self):
         table_names = self.db.get_table_names()
@@ -279,6 +289,12 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.add_record_button.setDisabled(False)
         self.delete_record_button.setDisabled(False)
         self.confirm_changes_button.setDisabled(False)
+
+    def highlight_data_cell(self, col, row, tool_tip):
+        cell = self.data_table.item(row, col)
+        cell.setBackground(QtGui.QColor(255, 0, 0, 127))
+        cell.setToolTip(tool_tip)
+        self.data_table.clearSelection()
 
     def closeEvent(self, a0):
         if self.add_table_window:
