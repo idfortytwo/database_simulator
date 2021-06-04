@@ -182,7 +182,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
             table_name = self.table_names.item(table_index.row(), 0).text()
 
             confirmation_window = ConfirmRemovalMessageBox(
-                self, f'Are you sure you want to delte table "{table_name}"?')
+                self, f'Are you sure you want to delete table "{table_name}"?')
             if confirmation_window.ask():
                 self.db.drop_table(table_name)
                 tables_to_delete.append(table_name)
