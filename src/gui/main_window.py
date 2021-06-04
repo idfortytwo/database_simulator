@@ -46,6 +46,9 @@ class DatabaseWindow(QtWidgets.QMainWindow):
 
         self.query_line_edit = ClickableLineEdit(self.centralwidget)
         self.query_line_edit.setGeometry(QtCore.QRect(220, 30, 801, 41))
+        line_edit_font = self.query_line_edit.font()
+        line_edit_font.setPixelSize(12)
+        self.query_line_edit.setFont(line_edit_font)
         # noinspection PyUnresolvedReferences
         self.query_line_edit.clicked.connect(self.clear_line_edit)
 
