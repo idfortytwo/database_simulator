@@ -192,7 +192,10 @@ class DatabaseWindow(QtWidgets.QMainWindow):
                 self.filter_button.setDisabled(True)
 
     def add_record(self):
-        self.table_data_table.setRowCount(self.table_data_table.rowCount() + 1)
+        row_count = self.table_data_table.rowCount()
+        self.table_data_table.setRowCount(row_count + 1)
+        for j in range(self.table_data_table.columnCount()):
+            self.table_data_table.setItem(row_count, j, QtWidgets.QTableWidgetItem())
 
     def fill_tables_table(self):
         table_names = self.db.get_table_names()
