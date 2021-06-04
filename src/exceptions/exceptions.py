@@ -54,3 +54,18 @@ class ColumnNotFoundError(Error):
         self.column_name = column_name
         self.table_name = table_name
         self.message = f'no such column in table {table_name}: {column_name}'
+
+
+class ConversionError(Error):
+    def __init__(self, value, data_type):
+        self.value = value
+        self.data_type = data_type
+        self.message = f'failed to convert "{value}" to {data_type}'
+
+
+class CellDataConversionError(ConversionError):
+    def __init__(self, col, row, value, data_type):
+        super().__init__(value, data_type)
+        self.col = col
+        self.row = row
+        self.message = f'failed to convert "{value}" to {data_type} at cell {col}:{row}'

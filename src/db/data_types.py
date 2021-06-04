@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from exceptions.exceptions import InvalidTypeError
+from exceptions.exceptions import InvalidTypeError, ConversionError
 
 
 class DataType(ABC):
@@ -9,9 +9,8 @@ class DataType(ABC):
     def validate(value):
         pass
 
-    @staticmethod
     @abstractmethod
-    def convert(value):
+    def convert(self, value):
         pass
 
     @abstractmethod
@@ -25,9 +24,11 @@ class _Integer(DataType):
         if not isinstance(value, int):
             raise InvalidTypeError(value, 'integer')
 
-    @staticmethod
-    def convert(value):
-        return int(value)
+    def convert(self, value):
+        try:
+            return int(value)
+        except ValueError:
+            raise ConversionError(value, self)
 
     def __str__(self):
         return 'Integer'
@@ -39,9 +40,11 @@ class _Float(DataType):
         if not isinstance(value, float) and not isinstance(value, int):
             raise InvalidTypeError(value, 'float')
 
-    @staticmethod
-    def convert(value):
-        return float(value)
+    def convert(self, value):
+        try:
+            return float(value)
+        except ValueError:
+            raise ConversionError(value, self)
 
     def __str__(self):
         return 'Float'
@@ -53,9 +56,11 @@ class _Text(DataType):
         if not isinstance(value, str):
             raise InvalidTypeError(value, 'text')
 
-    @staticmethod
-    def convert(value):
-        return str(value)
+    def convert(self, value):
+        try:
+            return str(value)
+        except ValueError:
+            raise ConversionError(value, self)
 
     def __str__(self):
         return 'Text'
