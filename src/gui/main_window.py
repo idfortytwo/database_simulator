@@ -229,10 +229,12 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         if self.records_to_delete:
             confirmation_window = ConfirmRemovalMessageBox(
                 self, f'Are you sure you want to delete {len(self.records_to_delete)} records?')
+
             if confirmation_window.ask():
                 for record_id in self.records_to_delete:
                     self.current_table.delete(record_id)
-                self.records_to_delete.clear()
+
+            self.records_to_delete.clear()
 
     def confirm_changes(self):
         self.add_records()
