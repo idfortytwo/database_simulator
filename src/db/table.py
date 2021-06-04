@@ -1,11 +1,11 @@
-from db.data_types import Type
+from db.data_types import DataType
 from exceptions.exceptions import RecordIndexError
 
 
 class Table:
     def __init__(self, columns: dict, records: list[list] = None):
         self.column_names: list[str] = list(columns.keys())
-        self.column_types: list[Type] = list(columns.values())
+        self.column_types: list[DataType] = list(columns.values())
         self.data = {}
         self.record_id_sequence = 0
 
