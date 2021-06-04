@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from exceptions.exceptions import InvalidTypeError
 
 
-class Type(ABC):
+class DataType(ABC):
     @staticmethod
     @abstractmethod
     def validate(value):
@@ -19,7 +19,7 @@ class Type(ABC):
         pass
 
 
-class _Integer(Type):
+class _Integer(DataType):
     @staticmethod
     def validate(value):
         if not isinstance(value, int):
@@ -33,7 +33,7 @@ class _Integer(Type):
         return 'Integer'
 
 
-class _Float(Type):
+class _Float(DataType):
     @staticmethod
     def validate(value):
         if not isinstance(value, float) and not isinstance(value, int):
@@ -47,7 +47,7 @@ class _Float(Type):
         return 'Float'
 
 
-class _Text(Type):
+class _Text(DataType):
     @staticmethod
     def validate(value):
         if not isinstance(value, str):
