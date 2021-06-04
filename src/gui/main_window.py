@@ -211,7 +211,6 @@ class DatabaseWindow(QtWidgets.QMainWindow):
 
             if v_header_text != '+':
                 record_id = int(v_header_text)
-                print(f'{v_header_text=} {record_id=}')
                 self.records_to_delete.append(record_id)
 
     def add_records(self):
@@ -227,9 +226,13 @@ class DatabaseWindow(QtWidgets.QMainWindow):
                 self.current_table.insert(record)
 
     def delete_records(self):
-        for record_id in self.records_to_delete:
-            self.current_table.delete(record_id)
-        self.records_to_delete.clear()
+        if self.records_to_delete:
+            confirmation_window = ConfirmRemovalMessageBox(
+                self, f'Are you sure you want to delete {len(self.records_to_delete)} records?')
+            if confirmation_window.ask():
+                for record_id in self.records_to_delete:
+                    self.current_table.delete(record_id)
+                self.records_to_delete.clear()
 
     def confirm_changes(self):
         self.add_records()
