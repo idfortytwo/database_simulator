@@ -77,6 +77,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.remove_record_button.setGeometry(QtCore.QRect(300, 70, 21, 20))
         self.remove_record_button.setText('-')
         self.remove_record_button.setDisabled(True)
+        self.remove_record_button.clicked.connect(self.remove_record)
 
         self.confirm_changes_button = QtWidgets.QPushButton(self.centralwidget)
         self.confirm_changes_button.setGeometry(QtCore.QRect(340, 70, 51, 21))
@@ -196,6 +197,11 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.table_data_table.setRowCount(row_count + 1)
         for j in range(self.table_data_table.columnCount()):
             self.table_data_table.setItem(row_count, j, QtWidgets.QTableWidgetItem())
+
+    def remove_record(self):
+        selected_records_indexes = self.table_data_table.selectedItems()
+        for record_index in selected_records_indexes:
+            self.table_data_table.removeRow(record_index.row())
 
     def fill_tables_table(self):
         table_names = self.db.get_table_names()
