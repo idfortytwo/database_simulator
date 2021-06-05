@@ -26,6 +26,9 @@ class Table:
         self.i = 0
         raise StopIteration
 
+    def get_columns(self):
+        return dict(zip(self.column_names, self.column_types))
+
     def insert(self, record: list):
         for value, expected_type in zip(record, self.column_types):
             expected_type.validate(value)
