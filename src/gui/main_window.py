@@ -20,9 +20,9 @@ class ClickableLineEdit(QtWidgets.QLineEdit):
 
 
 class DatabaseWindow(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, db=Database()):
         super().__init__()
-        self.db = Database()
+        self.db = db
         self.current_table: Table = Table({})
         self.current_table_name: str = ''
 
