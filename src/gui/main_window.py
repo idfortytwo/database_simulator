@@ -1,5 +1,6 @@
 import re
 import sys
+from typing import Union
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import pyqtSignal
@@ -26,7 +27,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.current_table: Table = Table({})
         self.current_table_name: str = ''
 
-        self.add_table_window = None
+        self.add_table_window: Union[AddTableWindow, None] = None
         self.setup_UI()
 
         self.records_to_delete: list[int] = []
