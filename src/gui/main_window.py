@@ -195,6 +195,9 @@ class DatabaseWindow(QtWidgets.QMainWindow):
                 self.data_table.setRowCount(0)
                 self.data_table.setColumnCount(0)
                 self.filter_button.setDisabled(True)
+                self.add_record_button.setDisabled(True)
+                self.delete_record_button.setDisabled(True)
+                self.confirm_changes_button.setDisabled(True)
 
     def add_record(self):
         row_count = self.data_table.rowCount()
