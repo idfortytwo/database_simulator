@@ -4,6 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSignal
 
 from db import data_types
+from db.data_types import Integer, Float, Text
 from exceptions.exceptions import DuplicateColumnNameError, EmptyColumnNameError, IllegalColumnNameError, EmptyTableNameError, \
     IllegalTableNameError
 from db.table import Table
@@ -36,6 +37,12 @@ class AddTableWindow(QtWidgets.QWidget):
         self.setup_UI()
         self.add_column()
         self.db = self.main_window.db
+
+        self.types_dict = {
+            'Integer': Integer,
+            'Float': Float,
+            'Text': Text
+        }
 
     def setup_UI(self):
         self.resize(421, 385)
@@ -135,7 +142,7 @@ class AddTableWindow(QtWidgets.QWidget):
                 raise IllegalColumnNameError(row_index)
 
             if column_name not in data.keys():
-                data[column_name] = column_type
+                data[column_name] = self.types_dict[column_type]
             else:
                 raise DuplicateColumnNameError(row_index)
 
@@ -153,6 +160,7 @@ class AddTableWindow(QtWidgets.QWidget):
     def confirm(self):
         try:
             table_name, data = self.get_table_data()
+
         except EmptyTableNameError:
             self.highlight_table_name_line_edit('Table name should not be empty')
 
