@@ -1,4 +1,5 @@
 class Error(Exception):
+    """Project exceptions base class"""
     def __init__(self, message):
         self.message = message
 
