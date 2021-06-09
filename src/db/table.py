@@ -29,16 +29,19 @@ class Table:
         raise StopIteration
 
     def get_columns(self) -> dict[str: DataType]:
+        """Returns dictionary of column names and data types"""
         return dict(zip(self.column_names, self.column_types))
 
-    def insert(self, record: list) -> None:
+    def insert(self, record: list[Union[int, float, str]]) -> None:
+        """Inserts new record into table"""
         for value, expected_type in zip(record, self.column_types):
             expected_type.validate(value)
 
         self.data[self.record_id_sequence] = record
         self.record_id_sequence += 1
 
-    def batch_insert(self, records: list[list]) -> None:
+    def batch_insert(self, records: list[list[Union[int, float, str]]]) -> None:
+        """Inserts list of records into table"""
         for record in records:
             for value, expected_type in zip(record, self.column_types):
                 expected_type.validate(value)
@@ -48,6 +51,7 @@ class Table:
             self.record_id_sequence += 1
 
     def delete(self, record_id: int) -> None:
+        """Deletes a record of given id"""
         try:
             del self.data[record_id]
         except IndexError:
