@@ -308,23 +308,3 @@ def run_GUI() -> None:
     w = DatabaseWindow()
     w.show()
     app.exec()
-
-
-def main():
-    app = QtWidgets.QApplication(sys.argv)
-    w = DatabaseWindow()
-    w._db.load('kek.db')
-    w._load_table_names()
-    w._load_table(0)
-    w.show()
-    app.exec()
-
-
-if __name__ == '__main__':
-    def except_hook(cls, exception, traceback):
-        sys.__excepthook__(cls, exception, traceback)
-
-
-    sys.excepthook = except_hook
-
-    main()
