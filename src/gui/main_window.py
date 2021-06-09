@@ -3,21 +3,13 @@ import sys
 from typing import Union
 
 from PyQt5 import QtCore, QtWidgets, QtGui
-from PyQt5.QtCore import pyqtSignal
 
 from db.database import Database
 from exceptions.exceptions import ColumnNotFoundError, CellDataConversionError, ConversionError
 from db.table import Table
 from gui.add_table_window import AddTableWindow
 from gui.confirm_removal_window import ConfirmRemovalMessageBox
-
-
-class ClickableLineEdit(QtWidgets.QLineEdit):
-    clicked = pyqtSignal()
-
-    def mousePressEvent(self, event):
-        # noinspection PyUnresolvedReferences
-        self.clicked.emit()
+from gui.widgets import ClickableLineEdit
 
 
 class DatabaseWindow(QtWidgets.QMainWindow):

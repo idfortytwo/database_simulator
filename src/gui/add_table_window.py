@@ -1,33 +1,15 @@
 import re
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import pyqtSignal
 
 from db import data_types
 from db.data_types import Integer, Float, Text, DataType
+from db.table import Table
 from exceptions.exceptions import DuplicateColumnNameError, EmptyColumnNameError, IllegalColumnNameError, \
     EmptyTableNameError, IllegalTableNameError
-from db.table import Table
-
+from gui.widgets import TypeComboBox, ClickableLineEdit
 
 NAMING_PATTERN = '^[A-Za-zżźćńółęąśŻŹĆĄŚĘŁÓŃ0-9_]*$'
-
-
-class TypeComboBox(QtWidgets.QComboBox):
-    def __init__(self, data_types: list[DataType]):
-        super().__init__()
-
-        self.data_types_dict = {str(data_type): data_type for data_type in data_types}
-        for data_type in data_types:
-            self.addItem(str(data_type))
-
-
-class ClickableLineEdit(QtWidgets.QLineEdit):
-    clicked = pyqtSignal()
-
-    def mousePressEvent(self, event):
-        # noinspection PyUnresolvedReferences
-        self.clicked.emit()
 
 
 class AddTableWindow(QtWidgets.QWidget):
@@ -119,7 +101,7 @@ class AddTableWindow(QtWidgets.QWidget):
             for selected_row in selected_rows:
                 self.columns_table.removeRow(selected_row)
         else:
-            self.columns_table.removeRow(self.columns_table.rowCount()-1)
+            self.columns_table.removeRow(self.columns_table.rowCount() - 1)
 
     def get_table_data(self) -> [str, DataType]:
         table_name = self.line_edit_table_name.text()
