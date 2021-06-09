@@ -91,6 +91,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self._data_table.setGeometry(QtCore.QRect(220, 100, 881, 641))
         self._data_table.setColumnCount(0)
         self._data_table.setRowCount(0)
+        self._data_table.horizontalHeader().setMinimumSectionSize(100)
 
         self._load_db_button = QtWidgets.QPushButton(self._centralwidget)
         self._load_db_button.setGeometry(QtCore.QRect(30, 670, 91, 31))
@@ -238,7 +239,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
 
         except CellDataConversionError as convertion_error:
             self._highlight_data_cell(convertion_error.col, convertion_error.row,
-                                     f'Failed to convert value to {convertion_error.data_type}')
+                                      f'Failed to convert value to {convertion_error.data_type}')
 
         else:
             if self.records_to_delete:
@@ -288,6 +289,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self._add_record_button.setDisabled(False)
         self._delete_record_button.setDisabled(False)
         self._confirm_changes_button.setDisabled(False)
+        self._data_table.resizeColumnsToContents()
 
     def _highlight_data_cell(self, col: int, row: int, tool_tip: str):
         cell = self._data_table.item(row, col)
@@ -321,6 +323,8 @@ def main():
 if __name__ == '__main__':
     def except_hook(cls, exception, traceback):
         sys.__excepthook__(cls, exception, traceback)
+
+
     sys.excepthook = except_hook
 
     main()
