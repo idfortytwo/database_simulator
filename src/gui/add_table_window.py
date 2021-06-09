@@ -18,7 +18,7 @@ class AddTableWindow(QtWidgets.QWidget):
         self.main_window = main_window
         self.setup_UI()
         self.add_column()
-        self.db = self.main_window.db
+        self.db = self.main_window._db
 
         self.types_dict = {
             'Integer': Integer,
@@ -164,7 +164,7 @@ class AddTableWindow(QtWidgets.QWidget):
         else:
             table = Table(data)
             self.db.add_table(table, table_name)
-            self.main_window.load_table_names()
+            self.main_window._load_table_names()
             self.close()
 
     def highlight_column_name_cell(self, row_index: int, tool_tip: str) -> None:
@@ -181,5 +181,5 @@ class AddTableWindow(QtWidgets.QWidget):
         self.close()
 
     def closeEvent(self, a0) -> None:
-        self.main_window.add_table_window = None
+        self.main_window._add_table_window = None
         self.close()

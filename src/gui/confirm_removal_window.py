@@ -5,9 +5,9 @@ class ConfirmRemovalMessageBox(QtWidgets.QMessageBox):
     # noinspection PyUnresolvedReferences
     def __init__(self, parent: 'DatabaseWindow', text: str):
         super().__init__(parent)
-        self.parent = parent
-        self.text = text
+        self._parent = parent
+        self._text = text
 
     def ask(self) -> bool:
-        response = self.warning(self.parent, 'Confirm removal', self.text, self.Yes | self.No)
+        response = self.warning(self._parent, 'Confirm removal', self._text, self.Yes | self.No)
         return response == self.Yes
