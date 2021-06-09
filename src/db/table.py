@@ -53,20 +53,5 @@ class Table:
         except IndexError:
             raise RecordIndexError(record_id)
 
-    def save(self, filename: str) -> None:
-        with open(filename, 'w') as f:
-            for column_name in self.column_names:
-                f.write(f'{column_name} ')
-            f.write('\n')
-
-            for column_type in self.column_types:
-                f.write(f'{column_type} ')
-            f.write('\n')
-
-            for record in self.data:
-                for value in record:
-                    f.write(f'{repr(value)} ')
-                f.write('\n')
-
     def __repr__(self) -> str:
         return str(self.data)
