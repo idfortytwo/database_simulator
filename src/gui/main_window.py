@@ -32,7 +32,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
 
         self.records_to_delete: list[int] = []
 
-    def setup_UI(self):
+    def setup_UI(self) -> None:
         self.resize(1139, 775)
         # MainWindow.resize(800, 500)
         self.centralwidget = QtWidgets.QWidget(self)
@@ -118,7 +118,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.setWindowTitle('Database Simulator')
         QtCore.QMetaObject.connectSlotsByName(self)
 
-    def load_db(self):
+    def load_db(self) -> None:
         filename = QtWidgets.QFileDialog.getOpenFileName(
             self, 'Load database', '', 'Database Files (*.db)')[0]
 
@@ -128,7 +128,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.db.load(filename)
         self.load_table_names()
 
-    def save_db(self):
+    def save_db(self) -> None:
         filename = QtWidgets.QFileDialog.getSaveFileName(
             self, 'Save database', '', 'Database Files (*.db)')[0]
 
@@ -137,7 +137,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
 
         self.db.save(filename)
 
-    def parse_query(self, query):
+    def parse_query(self, query: str) -> str:
         pattern = r'\[[\"|\'](\w+)[\"|\']\]'
         p = re.compile(pattern)
 
@@ -151,10 +151,10 @@ class DatabaseWindow(QtWidgets.QMainWindow):
 
         return p.sub(name_to_index, query)
 
-    def reset_data(self):
+    def reset_data(self) -> None:
         self.refresh_table_data(self.current_table.data)
 
-    def filter_data(self):
+    def filter_data(self) -> None:
         try:
             parsed_query = self.parse_query(self.query_line_edit.text())
 
@@ -162,21 +162,21 @@ class DatabaseWindow(QtWidgets.QMainWindow):
             self.query_line_edit.setStyleSheet('QLineEdit {background: rgb(255, 0, 0, 127);}')
             self.query_line_edit.setToolTip(f'No such column: {column_not_found.column_name}')
 
-        else:  # lambda row: row['integer'] in [1, 3, 50, 70]
+        else:
             rows = dict(filter(eval(parsed_query), self.current_table.data.items()))
             self.refresh_table_data(rows)
 
-    def clear_line_edit(self):
+    def clear_line_edit(self) -> None:
         self.query_line_edit.setStyleSheet('QLineEdit {background: white;}')
         self.query_line_edit.setToolTip('')
 
-    def add_table(self):
+    def add_table(self) -> None:
         if not self.add_table_window:
             self.add_table_window = AddTableWindow(self)
             self.add_table_window.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
             self.add_table_window.show()
 
-    def delete_table(self):
+    def delete_table(self) -> None:
         selected_tables_indexes = self.table_names.selectedIndexes()
         tables_to_delete = []
         for table_index in selected_tables_indexes:
@@ -199,7 +199,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
                 self.delete_record_button.setDisabled(True)
                 self.confirm_changes_button.setDisabled(True)
 
-    def add_record(self):
+    def add_record(self) -> None:
         row_count = self.data_table.rowCount()
         self.data_table.setRowCount(row_count + 1)
         for j in range(self.data_table.columnCount()):
@@ -207,7 +207,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
 
         self.data_table.setVerticalHeaderItem(row_count, QtWidgets.QTableWidgetItem('+'))
 
-    def delete_record(self):
+    def delete_record(self) -> None:
         selected_records_indexes = self.data_table.selectedItems()
         for record_index in selected_records_indexes:
             v_header_text = self.data_table.verticalHeaderItem(record_index.row()).text()
@@ -217,7 +217,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
                 record_id = int(v_header_text)
                 self.records_to_delete.append(record_id)
 
-    def add_records(self):
+    def add_records(self) -> None:
         for row in range(self.data_table.rowCount()):
             record = []
             if self.data_table.verticalHeaderItem(row).text() == '+':
@@ -233,11 +233,11 @@ class DatabaseWindow(QtWidgets.QMainWindow):
 
                 self.current_table.insert(record)
 
-    def delete_records(self):
+    def delete_records(self) -> None:
         for record_id in self.records_to_delete:
             self.current_table.delete(record_id)
 
-    def confirm_changes(self):
+    def confirm_changes(self) -> None:
         try:
             self.add_records()
 
@@ -256,14 +256,14 @@ class DatabaseWindow(QtWidgets.QMainWindow):
 
             self.refresh_table_data(self.current_table.data)
 
-    def load_table_names(self):
+    def load_table_names(self) -> None:
         table_names = self.db.get_table_names()
         self.table_names.setRowCount(len(table_names))
         for i, row in enumerate(table_names):
             item = QtWidgets.QTableWidgetItem(row)
             self.table_names.setItem(i, 0, item)
 
-    def refresh_table_data(self, data):
+    def refresh_table_data(self, data: dict[int: Union[int, float, str]]) -> None:
         self.data_table.setRowCount(len(data))
         for i, (record_id, record) in enumerate(data.items()):
             for j, value in enumerate(record):
@@ -271,8 +271,8 @@ class DatabaseWindow(QtWidgets.QMainWindow):
                 self.data_table.setItem(i, j, item)
                 self.data_table.setVerticalHeaderItem(i, QtWidgets.QTableWidgetItem(str(record_id)))
 
-    def load_table(self, row):
-        table_name = self.table_names.item(row, 0).text()
+    def load_table(self, table_name_row: int) -> None:
+        table_name = self.table_names.item(table_name_row, 0).text()
         self.current_table_name = table_name
         self.current_table = self.db.get_table(table_name)
 
@@ -294,19 +294,19 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.delete_record_button.setDisabled(False)
         self.confirm_changes_button.setDisabled(False)
 
-    def highlight_data_cell(self, col, row, tool_tip):
+    def highlight_data_cell(self, col: int, row: int, tool_tip: str):
         cell = self.data_table.item(row, col)
         cell.setBackground(QtGui.QColor(255, 0, 0, 127))
         cell.setToolTip(tool_tip)
         self.data_table.clearSelection()
 
-    def closeEvent(self, a0):
+    def closeEvent(self, a0) -> None:
         if self.add_table_window:
             self.add_table_window.close()
         super().close()
 
 
-def run_GUI():
+def run_GUI() -> None:
     app = QtWidgets.QApplication(sys.argv)
     w = DatabaseWindow()
     w.show()

@@ -24,7 +24,7 @@ class _Integer(DataType):
         if not isinstance(value, int):
             raise InvalidTypeError(value, 'integer')
 
-    def convert(self, value):
+    def convert(self, value: any) -> int:
         try:
             return int(value)
         except ValueError:
@@ -36,11 +36,11 @@ class _Integer(DataType):
 
 class _Float(DataType):
     @staticmethod
-    def validate(value):
+    def validate(value: any):
         if not isinstance(value, float) and not isinstance(value, int):
             raise InvalidTypeError(value, 'float')
 
-    def convert(self, value):
+    def convert(self, value: any) -> float:
         try:
             return float(value)
         except ValueError:
@@ -56,7 +56,7 @@ class _Text(DataType):
         if not isinstance(value, str):
             raise InvalidTypeError(value, 'text')
 
-    def convert(self, value):
+    def convert(self, value: any) -> str:
         try:
             return str(value)
         except ValueError:

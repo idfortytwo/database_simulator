@@ -4,9 +4,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSignal
 
 from db import data_types
-from db.data_types import Integer, Float, Text
-from exceptions.exceptions import DuplicateColumnNameError, EmptyColumnNameError, IllegalColumnNameError, EmptyTableNameError, \
-    IllegalTableNameError
+from db.data_types import Integer, Float, Text, DataType
+from exceptions.exceptions import DuplicateColumnNameError, EmptyColumnNameError, IllegalColumnNameError, \
+    EmptyTableNameError, IllegalTableNameError
 from db.table import Table
 
 
@@ -14,7 +14,7 @@ NAMING_PATTERN = '^[A-Za-zżźćńółęąśŻŹĆĄŚĘŁÓŃ0-9_]*$'
 
 
 class TypeComboBox(QtWidgets.QComboBox):
-    def __init__(self, data_types):
+    def __init__(self, data_types: list[DataType]):
         super().__init__()
 
         self.data_types_dict = {str(data_type): data_type for data_type in data_types}
@@ -44,7 +44,7 @@ class AddTableWindow(QtWidgets.QWidget):
             'Text': Text
         }
 
-    def setup_UI(self):
+    def setup_UI(self) -> None:
         self.resize(421, 385)
 
         self.button_box = QtWidgets.QDialogButtonBox(self)
@@ -99,7 +99,7 @@ class AddTableWindow(QtWidgets.QWidget):
         self.setWindowTitle('Add table')
         QtCore.QMetaObject.connectSlotsByName(self)
 
-    def add_column(self):
+    def add_column(self) -> None:
         row = self.columns_table.rowCount()
         self.columns_table.setRowCount(row + 1)
 
@@ -112,7 +112,7 @@ class AddTableWindow(QtWidgets.QWidget):
         self.columns_table.setItem(row, 0, column_name)
         self.columns_table.setCellWidget(row, 1, column_types)
 
-    def remove_column(self):
+    def remove_column(self) -> None:
         selected_rows = [index.row() for index in self.columns_table.selectedIndexes()]
 
         if selected_rows:
@@ -121,7 +121,7 @@ class AddTableWindow(QtWidgets.QWidget):
         else:
             self.columns_table.removeRow(self.columns_table.rowCount()-1)
 
-    def get_table_data(self):
+    def get_table_data(self) -> [str, DataType]:
         table_name = self.line_edit_table_name.text()
         if not table_name:
             raise EmptyTableNameError()
@@ -148,16 +148,16 @@ class AddTableWindow(QtWidgets.QWidget):
 
         return table_name, data
 
-    def clear_cell_color(self, cell_index: QtCore.QModelIndex):
+    def clear_cell_color(self, cell_index: QtCore.QModelIndex) -> None:
         cell = self.columns_table.item(cell_index.row(), cell_index.column())
         cell.setBackground(QtGui.QColor(0, 0, 0, 0))
         cell.setToolTip('')
 
-    def clear_name_line_edit_color(self):
+    def clear_name_line_edit_color(self) -> None:
         self.line_edit_table_name.setStyleSheet('QLineEdit {background: white;}')
         self.line_edit_table_name.setToolTip('')
 
-    def confirm(self):
+    def confirm(self) -> None:
         try:
             table_name, data = self.get_table_data()
 
@@ -185,19 +185,19 @@ class AddTableWindow(QtWidgets.QWidget):
             self.main_window.load_table_names()
             self.close()
 
-    def highlight_column_name_cell(self, row_index, tool_tip):
+    def highlight_column_name_cell(self, row_index: int, tool_tip: str) -> None:
         cell = self.columns_table.item(row_index, 0)
         cell.setBackground(QtGui.QColor(255, 0, 0, 127))
         cell.setToolTip(tool_tip)
         self.columns_table.clearSelection()
 
-    def highlight_table_name_line_edit(self, tool_tip):
+    def highlight_table_name_line_edit(self, tool_tip: str) -> None:
         self.line_edit_table_name.setStyleSheet('QLineEdit {background: rgb(255, 0, 0, 127);}')
         self.line_edit_table_name.setToolTip(tool_tip)
 
-    def cancel(self):
+    def cancel(self) -> None:
         self.close()
 
-    def closeEvent(self, a0):
+    def closeEvent(self, a0) -> None:
         self.main_window.add_table_window = None
         self.close()

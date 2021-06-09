@@ -1,3 +1,5 @@
+from typing import Union
+
 from db.data_types import DataType
 from exceptions.exceptions import RecordIndexError
 
@@ -6,7 +8,7 @@ class Table:
     def __init__(self, columns: dict, records: list[list] = None):
         self.column_names: list[str] = list(columns.keys())
         self.column_types: list[DataType] = list(columns.values())
-        self.data = {}
+        self.data: dict[int: Union[int, float, str]] = {}
         self.record_id_sequence = 0
 
         if records:
@@ -17,7 +19,7 @@ class Table:
     def __iter__(self):
         return self
 
-    def __next__(self):
+    def __next__(self) -> list:
         if self.i < len(self.data):
             record = self.data[self.i]
             self.i += 1
@@ -26,17 +28,17 @@ class Table:
         self.i = 0
         raise StopIteration
 
-    def get_columns(self):
+    def get_columns(self) -> dict[str: DataType]:
         return dict(zip(self.column_names, self.column_types))
 
-    def insert(self, record: list):
+    def insert(self, record: list) -> None:
         for value, expected_type in zip(record, self.column_types):
             expected_type.validate(value)
 
         self.data[self.record_id_sequence] = record
         self.record_id_sequence += 1
 
-    def batch_insert(self, records: list[list]):
+    def batch_insert(self, records: list[list]) -> None:
         for record in records:
             for value, expected_type in zip(record, self.column_types):
                 expected_type.validate(value)
@@ -45,13 +47,13 @@ class Table:
             self.data[self.record_id_sequence] = record
             self.record_id_sequence += 1
 
-    def delete(self, record_id):
+    def delete(self, record_id: int) -> None:
         try:
             del self.data[record_id]
         except IndexError:
             raise RecordIndexError(record_id)
 
-    def save(self, filename):
+    def save(self, filename: str) -> None:
         with open(filename, 'w') as f:
             for column_name in self.column_names:
                 f.write(f'{column_name} ')
@@ -66,5 +68,5 @@ class Table:
                     f.write(f'{repr(value)} ')
                 f.write('\n')
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self.data)
