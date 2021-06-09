@@ -25,8 +25,7 @@ class DatabaseWindow(QtWidgets.QMainWindow):
         self.records_to_delete: list[int] = []
 
     def setup_UI(self) -> None:
-        self.resize(1139, 775)
-        # MainWindow.resize(800, 500)
+        self.setFixedSize(1139, 775)
         self.centralwidget = QtWidgets.QWidget(self)
 
         self.add_table_button = QtWidgets.QPushButton(self.centralwidget)

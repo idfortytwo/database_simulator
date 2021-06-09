@@ -27,7 +27,7 @@ class AddTableWindow(QtWidgets.QWidget):
         }
 
     def setup_UI(self) -> None:
-        self.resize(421, 385)
+        self.setFixedSize(421, 385)
 
         self.button_box = QtWidgets.QDialogButtonBox(self)
         self.button_box.setGeometry(QtCore.QRect(230, 330, 161, 51))
