@@ -38,3 +38,18 @@ powinny być zapisywane na dysk, a po jego uruchomieniu wczytywane.
 11. Próba utworzenia tabeli z kolumną bez nazwy - oczekiwane niepowodzenie.
 12. Próba utworzenia tabeli z kolumną o nazwie &quot; &quot; (cztery spacje) - oczekiwane niepowodzenie,
 13. Wypełnij tabelę &quot;testi&quot; danymi testowymi (kolejne wartości &quot;ID, &quot;wzrost&quot; między 1.0 i 2.0) , wyszukaj wiersze dla których &quot;wzrost&quot; ma wartość podaną przez prowadzącego oraz &quot;ID&quot; jest liczbą parzystą lub nieparzystą (zależnie od woli prowadzącego).
+
+
+## Przykłady
+
+Tworzenie tabel
+
+![image](https://user-images.githubusercontent.com/17951356/173257792-3f4d3bd1-704e-493e-9ffb-775d98201234.png)
+
+Walidacja
+
+![image](https://user-images.githubusercontent.com/17951356/173257796-9ffa2e11-a8d8-49ac-8e0b-a3e8fc752633.png)
+
+Filtrowanie
+
+![image](https://user-images.githubusercontent.com/17951356/173257797-f414b767-b8db-41b2-bf14-9c0f73b3ec29.png)
